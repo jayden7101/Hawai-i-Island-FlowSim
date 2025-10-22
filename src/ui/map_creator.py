@@ -1,6 +1,7 @@
 # map_creator.py
 import folium
 import io
+from vent_locations import vent_locations
 
 def create_big_island_map():
     """
@@ -32,7 +33,16 @@ def create_big_island_map():
 
     # Add a preset marker at the center
     folium.Marker(center_coords, tooltip="Big Island").add_to(folium_map)
-
+    
+    # Add vent locations
+    for vent in vent_locations:
+        folium.Marker(
+            location=vent['coords'],
+            tooltip=vent['name'],
+            popup=vent['name'],
+            icon=folium.Icon(color='red')
+        ).add_to(folium_map)
+        
     # Save map to bytes
     map_bytes = io.BytesIO()
     folium_map.save(map_bytes, close_file=False)
