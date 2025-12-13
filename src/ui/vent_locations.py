@@ -1,8 +1,9 @@
 #vent_locations.py 
 
 vent_locations = [
-    {"name": "Moku‘āweoweo Summit Vent", "coords": [19.475, -155.608]},
-    {"name": "Southwest Rift Zone Vent", "coords": [19.383, -155.625]},
-    {"name": "Northeast Rift Zone Vent", "coords": [19.525, -155.500]},
-    {"name": "Kilauea Summit Caldera", "coords": [19.406, -155.283]},
+    [19.1859, -155.7437], 
+    [19.23748, -155.74508],
+    [19.26197, -155.7398],
+    [19.1275, -155.7349], 
+    [19.5591, -155.2292],
 ]

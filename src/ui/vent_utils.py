@@ -1,5 +1,5 @@
 from math import radians, sin, cos, sqrt, atan2
-import vent_locations
+from vent_locations import vent_locations
 
 def haversine_distance(coord1, coord2):
     """Return the distance between two lat/lon pairs in kilometers."""
@@ -18,10 +18,10 @@ def find_closest_vent(user_coord):
     closest = None
     min_distance = float('inf')
 
-    for vent in vent_locations:
-        dist = haversine_distance(user_coord, vent["coords"])
+    for vent_coord in vent_locations:
+        dist = haversine_distance(user_coord, vent_coord)
         if dist < min_distance:
             min_distance = dist
-            closest = vent
+            closest = vent_coord
 
     return closest, round(min_distance, 2)
