@@ -1,4 +1,4 @@
-# CS 460: Hawaii Island Lava Flow Simulation Project
+# CS 460: Hawaii Island Lava Flow Simulation Project - Front End
 
 An interactive application using PyQt5 for simulating lava flows on Hawaii's Big Island. Users can click locations on an interactive map, configure simulation parameters (viscosity, vent size, effusion rate), and view animated simulations.
 
@@ -42,7 +42,3 @@ python Hawai-i-Island-FlowSim/src/main_window.py
 ### Bonus if possible
 
 6) Dynamic array/configuration system for easier addition of new vents and animations.
-
-## TODO: 
-1) Review the README and add on to the Post Prototype goals
-2) Backend update the README as needed --> mainly focuses on the front end 
