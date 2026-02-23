@@ -4,7 +4,10 @@ import shutil
 import tempfile
 
 from PyQt5.QtCore import QUrl, QObject, pyqtSlot, Qt, QFile, QIODevice
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QFormLayout,QLabel, QPushButton, QRadioButton, QButtonGroup, QSplitter, QFrame, QMessageBox,QTabWidget
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
+    QFormLayout, QLabel, QPushButton, QRadioButton, QButtonGroup,
+    QSplitter, QFrame, QMessageBox, QTabWidget,QTextEdit, QScrollArea)
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtGui import QIcon
@@ -38,6 +41,45 @@ STYLE_STATUS_BUBBLE = f"background-color: {COLOR_STATUS_BG}; padding: 10px; bord
 STYLE_INFO_BTN = f"border-radius: 14px; background-color: {COLOR_SALMON}; font-weight: bold;"
 STYLE_RUN_BTN = f"background-color: {COLOR_SALMON}; font-weight: bold; padding: 12px;"
 STYLE_LABEL_BOLD = "font-weight: bold; font-size: 16px;"
+STYLE_HELP_BTN = f"background-color: {COLOR_CREAM}; font-weight: bold; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; text-align: left;"
+# this is the disclaimer box style setup
+STYLE_DISCLAIMER_BOX = f"""
+    QTextEdit {{
+        background-color: #fff8e1;
+        border: 1px solid #ffe082;
+        border-radius: 5px;
+        padding: 8px;
+        font-size: 11px;
+        font-family: Verdana, serif;
+        color: #4e342e;
+    }}
+    QScrollBar:vertical {{
+        width: 12px;
+        background: #f0f0f0;
+        border-radius: 6px;
+    }}
+    QScrollBar::handle:vertical {{
+        background: #bcaaa4;
+        border-radius: 6px;
+        min-height: 20px;
+    }}
+    QScrollBar::handle:vertical:hover {{
+        background: #8d6e63;
+    }}
+  QScrollBar::sub-line:vertical {{
+        background: #bcaaa4;
+        height: 20px;
+        subcontrol-position: top;
+        subcontrol-origin: margin;
+    }}
+    QScrollBar::add-line:vertical {{
+        background: #bcaaa4;
+        height: 16px;
+        subcontrol-position: bottom;
+        subcontrol-origin: margin;
+    }}
+"""
+
 
 # Map Bridge (JS and Python link)
 class MapBridge(QObject):
@@ -83,8 +125,9 @@ class LavaGui(QMainWindow):
     def initUi(self):
         # Init window
         self.setWindowTitle(WINDOW_TITLE)
-        self.resize(1100, 750)
-
+        screen = QApplication.primaryScreen().availableGeometry()
+        self.resize(int(screen.width() * 0.85), int(screen.height() * 0.85))
+        
         try:
             if os.path.exists(ICON_PATH):
                 self.setWindowIcon(QIcon(ICON_PATH))
@@ -113,6 +156,10 @@ class LavaGui(QMainWindow):
         self.setCentralWidget(windowSplit)
 
     def setupControls(self, panel):
+
+        screen = QApplication.primaryScreen().availableGeometry()
+        windowHeight = int(screen.height() * 0.85)
+        
         # LHS Controol panel
         layout = QVBoxLayout()
         panel.setLayout(layout)
@@ -133,10 +180,39 @@ class LavaGui(QMainWindow):
         self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low (Pahoehoe)", "High ('A'a)"])
         self.addSeparator(layout)
 
-        self.groupVent = self.createRadioGroup(layout, "Vent Size", ["Small", "Medium", "Large"])
+        self.groupVent = self.createRadioGroup(layout, "Vent Size", ["Small", "Large"])
         self.addSeparator(layout)
 
-        self.groupEff = self.createRadioGroup(layout, "Effusion Rate", ["Low", "Medium", "High"])
+        self.groupEff = self.createRadioGroup(layout, "Effusion Rate", ["Low", "High"])
+    
+        self.btnDisclaimer = QPushButton("▶  Disclaimer")
+        self.btnDisclaimer.setStyleSheet(STYLE_HELP_BTN)
+        self.btnDisclaimer.setCheckable(True)
+        self.btnDisclaimer.clicked.connect(self.toggleHelpPanel)
+        hBox.addWidget(self.btnDisclaimer)
+        
+        #
+        self.disclaimerBox = QTextEdit()
+        self.disclaimerBox.setPlainText(
+            "All lava simlations are: \n"
+            "1) Created in VolcFlow C, which has been recompiled to be 64 bit. \n\n"
+            "2) Scaled down: a 350 second simulation is a 350 second lava flow;\n"
+            "this means that the velocities reported are not the velocities that \n "
+            "would be accurate in actuality: there are no lava flows running at 130 mph.\n\n"
+            "3) These are not official animations, but estimates. \n\n"
+            "4) Lava will not behave exactly as in the animation: real flows will experience \n"
+            "channelling, changes in viscosity, which is not something VolcFlow C can replicate. \n"
+            "Vents for VolcFlow C are also circular, rather than a fissure."
+        )
+        self.disclaimerBox.setStyleSheet(STYLE_DISCLAIMER_BOX)
+        self.disclaimerBox.setReadOnly(True)
+        self.disclaimerBox.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        #self.disclaimerBox.setFixedHeight(300)
+        screen = QApplication.primaryScreen().availableGeometry()
+        self.disclaimerBox.setFixedHeight(int(screen.height() * 0.30))
+        self.disclaimerBox.setVisible(False)
+        layout.addWidget(self.disclaimerBox)
+        
         layout.addStretch() # For formatting or else it just looks weird
 
         # Action Bttns
@@ -394,6 +470,11 @@ class LavaGui(QMainWindow):
         }
         # Explicit file --> to prevents crash (once again, when backend is linked htis can all be changed)
         return videoMap.get(paramKey, "mlv5_3.webm")
+
+    def toggleHelpPanel(self, checked):
+        # Expand/collapse the help text box
+        self.disclaimerBox.setVisible(checked)
+        self.btnDisclaimer.setText("▼  Disclaimer" if checked else "▶  Disclaimer")
 
     def addSeparator(self, layout):
         sep = QFrame()
