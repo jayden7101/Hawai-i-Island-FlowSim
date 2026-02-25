@@ -10,10 +10,14 @@ from PyQt5.QtWidgets import (
     QSplitter, QFrame, QMessageBox, QTabWidget,QTextEdit, QScrollArea)
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 from PyQt5.QtWebChannel import QWebChannel
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QFontInfo
 
 from map_creator import create_big_island_map
 from vent_utils import find_closest_vent
+
+from style_sheets import *
+from text_descriptions import *
 
 # Configuration/Consts
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -26,59 +30,6 @@ VIDEO_DIR_PATH = os.path.join(PROJECT_ROOT, "animation_videos")
 
 WINDOW_TITLE = "Lava Flow Simulation"
 
-# Theme Colors --> theme can always change if needed or swap out
-COLOR_CREAM = "#FFFDD0"
-COLOR_SALMON = "#ffcccb"
-COLOR_PAUSE = "#ffeb3b" 
-COLOR_RESET = "#e0e0e0" 
-COLOR_STATUS_BG = "#FFDBBB"
-
-# Styles 
-STYLE_LEFT_PANE = f"background-color: {COLOR_CREAM};"
-STYLE_PAUSE_BTN = f"background-color: {COLOR_PAUSE}; font-weight: bold; padding: 12px;"
-STYLE_RESET_BTN = f"background-color: {COLOR_RESET}; font-weight: bold; padding: 12px; margin-top: 5px;"
-STYLE_STATUS_BUBBLE = f"background-color: {COLOR_STATUS_BG}; padding: 10px; border-radius: 5px;"
-STYLE_INFO_BTN = f"border-radius: 14px; background-color: {COLOR_SALMON}; font-weight: bold;"
-STYLE_RUN_BTN = f"background-color: {COLOR_SALMON}; font-weight: bold; padding: 12px;"
-STYLE_LABEL_BOLD = "font-weight: bold; font-size: 16px;"
-STYLE_HELP_BTN = f"background-color: {COLOR_CREAM}; font-weight: bold; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; text-align: left;"
-# this is the disclaimer box style setup
-STYLE_DISCLAIMER_BOX = f"""
-    QTextEdit {{
-        background-color: #fff8e1;
-        border: 1px solid #ffe082;
-        border-radius: 5px;
-        padding: 8px;
-        font-size: 11px;
-        font-family: Verdana, serif;
-        color: #4e342e;
-    }}
-    QScrollBar:vertical {{
-        width: 12px;
-        background: #f0f0f0;
-        border-radius: 6px;
-    }}
-    QScrollBar::handle:vertical {{
-        background: #bcaaa4;
-        border-radius: 6px;
-        min-height: 20px;
-    }}
-    QScrollBar::handle:vertical:hover {{
-        background: #8d6e63;
-    }}
-  QScrollBar::sub-line:vertical {{
-        background: #bcaaa4;
-        height: 20px;
-        subcontrol-position: top;
-        subcontrol-origin: margin;
-    }}
-    QScrollBar::add-line:vertical {{
-        background: #bcaaa4;
-        height: 16px;
-        subcontrol-position: bottom;
-        subcontrol-origin: margin;
-    }}
-"""
 
 
 # Map Bridge (JS and Python link)
@@ -143,79 +94,88 @@ class LavaGui(QMainWindow):
         windowSplit = QSplitter(Qt.Horizontal)
         
         leftPane = QWidget()
-        leftPane.setStyleSheet(STYLE_LEFT_PANE)
+        leftPane.setStyleSheet(STYLE_PANES)
         self.setupControls(leftPane)
         
-        rightPaneWidget = QWidget() 
+        rightPaneWidget = QWidget()
+        rightPaneWidget.setStyleSheet(f"background-color: {COLOR_PANES};")
         self.setupMapArea(rightPaneWidget)
 
         windowSplit.addWidget(leftPane)
         windowSplit.addWidget(rightPaneWidget)
         windowSplit.setSizes([250, 790])
+        windowSplit.setStyleSheet(STYLE_SPLITTER)
+        windowSplit.setHandleWidth(6)
 
         self.setCentralWidget(windowSplit)
 
     def setupControls(self, panel):
-
         screen = QApplication.primaryScreen().availableGeometry()
-        windowHeight = int(screen.height() * 0.85)
-        
-        # LHS Controol panel
+        btn_width = int(screen.width()*.08)
+
         layout = QVBoxLayout()
         panel.setLayout(layout)
-        
-        # Info Header
+
         hBox = QHBoxLayout()
-        self.btnInfo = QPushButton("i")
-        self.btnInfo.setFixedSize(30, 35)
-        self.btnInfo.setStyleSheet(STYLE_INFO_BTN )
-        self.btnInfo.clicked.connect(self.showInfo)
         
+        self.btnInfo = QPushButton("i")
+        self.btnInfo.setFixedSize(30, 30)
+        self.btnInfo.setStyleSheet(STYLE_INFO_BTN)
+        self.btnInfo.clicked.connect(self.showInfo)
+
+        # disclaimer button
+        self.btnDisclaimer = QPushButton("▶  Disclaimer")
+        self.btnDisclaimer.setStyleSheet(STYLE_DISC_PARAM_BTN)
+        self.btnDisclaimer.setCheckable(True)
+        self.btnDisclaimer.clicked.connect(self.toggleDisclaimerPanel)
+        self.btnDisclaimer.setFixedWidth(btn_width)
+
+        # parameter button
+        self.btnParameter = QPushButton("▶  Parameters")
+        self.btnParameter.setStyleSheet(STYLE_DISC_PARAM_BTN)
+        self.btnParameter.setCheckable(True)
+        self.btnParameter.clicked.connect(self.toggleParameterPanel)
+        self.btnParameter.setFixedWidth(btn_width)
+
         hBox.addWidget(self.btnInfo)
-        hBox.addStretch() 
+        hBox.addWidget(self.btnDisclaimer)
+        hBox.addWidget(self.btnParameter)
+        hBox.addStretch()
         layout.addLayout(hBox)
         self.addSeparator(layout)
 
-        # Viscosity,Vent size, and effusion rate radio groups
-        self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low (Pahoehoe)", "High ('A'a)"])
+        # configuration parameter radio buttons
+        self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low \n(Pahoehoe)", "High \n('A'a)"])
         self.addSeparator(layout)
 
         self.groupVent = self.createRadioGroup(layout, "Vent Size", ["Small", "Large"])
         self.addSeparator(layout)
 
         self.groupEff = self.createRadioGroup(layout, "Effusion Rate", ["Low", "High"])
-    
-        self.btnDisclaimer = QPushButton("▶  Disclaimer")
-        self.btnDisclaimer.setStyleSheet(STYLE_HELP_BTN)
-        self.btnDisclaimer.setCheckable(True)
-        self.btnDisclaimer.clicked.connect(self.toggleHelpPanel)
-        hBox.addWidget(self.btnDisclaimer)
-        
-        #
+        self.addSeparator(layout)
+
+        # text boxes for disclaimer and parameter boxes
         self.disclaimerBox = QTextEdit()
-        self.disclaimerBox.setPlainText(
-            "All lava simlations are: \n"
-            "1) Created in VolcFlow C, which has been recompiled to be 64 bit. \n\n"
-            "2) Scaled down: a 350 second simulation is a 350 second lava flow;\n"
-            "this means that the velocities reported are not the velocities that \n "
-            "would be accurate in actuality: there are no lava flows running at 130 mph.\n\n"
-            "3) These are not official animations, but estimates. \n\n"
-            "4) Lava will not behave exactly as in the animation: real flows will experience \n"
-            "channelling, changes in viscosity, which is not something VolcFlow C can replicate. \n"
-            "Vents for VolcFlow C are also circular, rather than a fissure."
-        )
-        self.disclaimerBox.setStyleSheet(STYLE_DISCLAIMER_BOX)
+        self.disclaimerBox.setHtml(DISCLAIMER_TEXT)
+        self.disclaimerBox.setStyleSheet(STYLE_DISC_PARAM_BOXES)
         self.disclaimerBox.setReadOnly(True)
         self.disclaimerBox.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        #self.disclaimerBox.setFixedHeight(300)
-        screen = QApplication.primaryScreen().availableGeometry()
         self.disclaimerBox.setFixedHeight(int(screen.height() * 0.30))
         self.disclaimerBox.setVisible(False)
         layout.addWidget(self.disclaimerBox)
-        
-        layout.addStretch() # For formatting or else it just looks weird
 
-        # Action Bttns
+        self.parameterBox = QTextEdit()
+        self.parameterBox.setHtml(PARAMETER_TEXT)
+        self.parameterBox.setStyleSheet(STYLE_DISC_PARAM_BOXES)
+        self.parameterBox.setReadOnly(True)
+        self.parameterBox.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.parameterBox.setFixedHeight(int(screen.height() * 0.30))
+        self.parameterBox.setVisible(False)
+        layout.addWidget(self.parameterBox)
+
+        layout.addStretch()
+
+        # Action bttns
         self.btnStart = QPushButton("RUN SIMULATION")
         self.btnStart.setStyleSheet(STYLE_RUN_BTN)
         self.btnStart.clicked.connect(self.handleRunClick)
@@ -223,30 +183,46 @@ class LavaGui(QMainWindow):
 
         self.btnReset = QPushButton("RESET ANIMATION")
         self.btnReset.setStyleSheet(STYLE_RESET_BTN)
-        self.btnReset.clicked.connect(self.handleResetClick )
+        self.btnReset.clicked.connect(self.handleResetClick)
         layout.addWidget(self.btnReset)
 
     def createRadioGroup(self, parentLayout, labelText, optionsList):
-        # Style the radio groups (func)
-        label = QLabel(labelText)
-        label.setStyleSheet(STYLE_LABEL_BOLD)
-        parentLayout.addWidget(label)
+        # outer container wraps label and buttons
+        outerContainer = QWidget()
+        outerContainer.setStyleSheet(f"""
+            QWidget {{
+                background-color: {COLOR_PORCELAIN};
+                border-radius: 6px;
+            }}
+        """)
+        outerLayout = QVBoxLayout()
+        outerLayout.setContentsMargins(8, 6, 8, 6)
+        outerLayout.setSpacing(4)
+        outerContainer.setLayout(outerLayout)
 
+        # label is now inside the container
+        label = QLabel(labelText)
+        label.setStyleSheet(STYLE_CONFIG_LABELS + "border: none; background-color: transparent;")
+        outerLayout.addWidget(label)
+
+        # radio buttons
         group = QButtonGroup(self)
         hLayout = QHBoxLayout()
-        
-        # Loop through options --> add to bttn group
+        hLayout.setSpacing(15)
+        hLayout.setContentsMargins(0, 0, 0, 0)
+
         for idx, text in enumerate(optionsList):
             rb = QRadioButton(text)
+            rb.setStyleSheet(STYLE_RADIO_BTN)
             if idx == 0:
-                rb.setChecked(True) 
-            
+                rb.setChecked(True)
             group.addButton(rb, idx)
-            hLayout.addWidget(rb) # Adds button
-        
-        container = QWidget()
-        container.setLayout(hLayout)
-        parentLayout.addWidget(container)
+            hLayout.addWidget(rb)
+
+        hLayout.addStretch()
+        outerLayout.addLayout(hLayout)
+
+        parentLayout.addWidget(outerContainer)
         return group
 
     def setupMapArea(self, parentWidget):
@@ -260,7 +236,7 @@ class LavaGui(QMainWindow):
         layout.addWidget(self.infoBubb)
 
         self.mapTab = QTabWidget()
-        self.mapTab.setTabPosition(QTabWidget.South) 
+        self.mapTab.setTabPosition(QTabWidget.South)
         
         self.viewTopo = QWebEngineView()
         self.initializeMap(self.viewTopo)
@@ -374,7 +350,7 @@ class LavaGui(QMainWindow):
             self.updateButtonState(isPlaying=True)
 
             # Parameters to make backend setup easier  
-            viscosity = "low" if self.groupVisc.checkedId() == 0 else "high "
+            viscosity = "low" if self.groupVisc.checkedId() == 0 else "high"
             
             ventId = self.groupVent.checkedId()
             if ventId == 0:
@@ -471,10 +447,23 @@ class LavaGui(QMainWindow):
         # Explicit file --> to prevents crash (once again, when backend is linked htis can all be changed)
         return videoMap.get(paramKey, "mlv5_3.webm")
 
-    def toggleHelpPanel(self, checked):
-        # Expand/collapse the help text box
+    # disclaimer button toggle; close parameter if disclaimer open
+    def toggleDisclaimerPanel(self, checked):
         self.disclaimerBox.setVisible(checked)
         self.btnDisclaimer.setText("▼  Disclaimer" if checked else "▶  Disclaimer")
+        if checked:
+                self.parameterBox.setVisible(False)
+                self.btnParameter.setChecked(False)
+                self.btnParameter.setText("▶  Parameters")
+
+    # parameter button toggle; close disclaimer if parameter open
+    def toggleParameterPanel(self, checked):
+        self.parameterBox.setVisible(checked)
+        self.btnParameter.setText("▼  Parameters" if checked else "▶  Parameters")
+        if checked:
+            self.disclaimerBox.setVisible(False)
+            self.btnDisclaimer.setChecked(False)
+            self.btnDisclaimer.setText("▶  Disclaimer")
 
     def addSeparator(self, layout):
         sep = QFrame()
