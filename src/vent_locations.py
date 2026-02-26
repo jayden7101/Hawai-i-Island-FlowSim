@@ -20,7 +20,10 @@ vent_lat_lon = [
     [19.5432, -155.2193],   #mlv1001
     [19.0798, -155.6923],   #mlv10
     [19.1784, -155.7295],   #mlv17
-    [19.522, -155.4338]     #mlv65
+    [19.522, -155.4338],    #mlv65
+    [19.2061, -155.7449],   #mlv5014
+    [19.1867, -155.7427],   #mlv5012
+    [19.2255, -155.7453]    #mlv5011                    
 ]
 
 vent_jsons = [
@@ -37,8 +40,10 @@ vent_jsons = [
     "mlv1001.json",
     "mlv10.json",
     "mlv17.json",
-    "mlv65.json"
-    
+    "mlv65.json",
+    "mlv5014.json",
+    "mlv5012.json",
+    "mlv5011.json" 
 ]
 
-vent_lat_lon = vent_jsons
+# vent_lat_lon = vent_jsons
