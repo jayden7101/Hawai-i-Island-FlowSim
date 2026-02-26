@@ -34,8 +34,8 @@ function findAndHookMap() {
 
 // State traccker
 window.currentVideoElement =null;
-
-window.playVideoOverlay = function(lat,lon,videoUrl) {
+// added swlat/lon, nelat/lon
+window.playVideoOverlay = function(swLat, swLon, neLat, neLon ,videoUrl) {
     // Play/resume vid function
     try {
         if (!window.leafletMap) return;
@@ -51,10 +51,10 @@ window.playVideoOverlay = function(lat,lon,videoUrl) {
             window.leafletMap.removeLayer(window.currentVideoLayer);
             window.currentVideoElement = null;
         }
-
+	// changed to swlatlon, nelatlon to account for boundary boxes
         var bounds = [
-            [lat-0.1, lon-0.1], 
-            [lat+0.1, lon+0.1]
+            [swLat, swLon], 
+            [neLat, neLon]
         ];
 
         window.currentVideoLayer = L.videoOverlay(
