@@ -14,7 +14,7 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtGui import QFontInfo
 
 from map_creator import create_big_island_map
-from vent_utils import find_closest_vent
+from vent_utils import *
 
 from style_sheets import *
 from text_descriptions import *
@@ -29,8 +29,6 @@ JS_BRIDGE_PATH = os.path.join(PROJECT_ROOT, "js", "map_bridge.js")
 VIDEO_DIR_PATH = os.path.join(PROJECT_ROOT, "animation_videos")
 
 WINDOW_TITLE = "Lava Flow Simulation"
-
-
 
 # Map Bridge (JS and Python link)
 class MapBridge(QObject):
@@ -55,8 +53,11 @@ class MapBridge(QObject):
 
             closestVent = ventData[0]
             distanceKm = ventData[1]
+            ventFile = ventData[3] # vent
             
             self.parentWindow.closestVent = closestVent
+            self.parentWindow.closestVentFile = ventFile
+            
             statusText = f"Selected: {lat:.4f}, {lon:.4f} | Ready to Run"
             self.parentWindow.infoBubb.setText(statusText)
             
@@ -87,6 +88,7 @@ class LavaGui(QMainWindow):
 
         # State
         self.closestVent = None
+        self.closestVentFile = None # file for closest vent
         self.tempFiles = list()
         self.isDataPlaying = False 
 
@@ -140,17 +142,22 @@ class LavaGui(QMainWindow):
         hBox.addWidget(self.btnInfo)
         hBox.addWidget(self.btnDisclaimer)
         hBox.addWidget(self.btnParameter)
+
         hBox.addStretch()
+        
         layout.addLayout(hBox)
         self.addSeparator(layout)
 
         # configuration parameter radio buttons
+        # visocisty
         self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low \n(Pahoehoe)", "High \n('A'a)"])
         self.addSeparator(layout)
-
+        
+        # vent size
         self.groupVent = self.createRadioGroup(layout, "Vent Size", ["Small", "Large"])
         self.addSeparator(layout)
-
+        
+        # """"effusion rate""""
         self.groupEff = self.createRadioGroup(layout, "Effusion Rate", ["Low", "High"])
         self.addSeparator(layout)
 
@@ -186,6 +193,9 @@ class LavaGui(QMainWindow):
         self.btnReset.clicked.connect(self.handleResetClick)
         layout.addWidget(self.btnReset)
 
+    """
+        create radio groups
+    """
     def createRadioGroup(self, parentLayout, labelText, optionsList):
         # outer container wraps label and buttons
         outerContainer = QWidget()
@@ -225,6 +235,9 @@ class LavaGui(QMainWindow):
         parentLayout.addWidget(outerContainer)
         return group
 
+    """
+        SETUP MAP AREA
+    """
     def setupMapArea(self, parentWidget):
         # RHS Map area builder (func)
         layout = QVBoxLayout()
@@ -321,6 +334,7 @@ class LavaGui(QMainWindow):
         try:
             self.isDataPlaying = False
             self.closestVent = None
+            self.closestVentFile = None # for file for closest vent
             self.currentCoords = None
             
             self.updateButtonState(isPlaying=False)
@@ -349,48 +363,54 @@ class LavaGui(QMainWindow):
             self.isDataPlaying = True
             self.updateButtonState(isPlaying=True)
 
-            # Parameters to make backend setup easier  
+            """
+            Parameters to make backend setup easier
+            removed melvin's original ventSize and effusion to account for
+            only two choices for vent size and effusion rate
+            """
             viscosity = "low" if self.groupVisc.checkedId() == 0 else "high"
-            
-            ventId = self.groupVent.checkedId()
-            if ventId == 0:
-                ventSize = "small"
-            elif ventId == 1:
-                ventSize = "medium"
-            else:
-                ventSize = "large"
-
-            effId = self.groupEff.checkedId()
-            if effId == 0:
-                rate = "low"
-            elif effId == 1:
-                rate = "medium"
-            else:
-                rate = "high"
+            ventSize = "small" if self.groupVent.checkedId() == 0 else "large"
+            effusion = "low" if self.groupEff.checkedId() == 0 else "high"
 
             # Debug output for backend :) 
             print("\nSIMULATION PARAMETERS")
             print(f"Viscosity:     {viscosity}")
             print(f"Vent Size:     {ventSize}")
-            print(f"Effusion Rate: {rate}")
+            print(f"Effusion Rate: {effusion}")
             print(f"Location:      {self.closestVent}")
             print("---------------------------------------\n")
 
-            videoFile = self.getVideoFile(viscosity, ventSize, rate )
-            videoPath = os.path.join(VIDEO_DIR_PATH, videoFile)
+            animKey, animData = get_animation_data(
+                self.closestVentFile, viscosity, ventSize, effusion)
+
+            if animData is None:
+                self.infoBubb.setText("Error: could not load animation data.")
+                return
+
+            # videoFile = self.getVideoFile(viscosity, ventSize, rate )
+            videoPath = os.path.join(VIDEO_DIR_PATH, animData["video_file"])
 
             if not os.path.exists(videoPath):
                 self.infoBubb.setText(f"Error: {videoFile} not found.")
                 return
 
             videoUrl = QUrl.fromLocalFile(videoPath).toString()
-            lat = self.closestVent[0]
-            lon = self.closestVent[1]
+            bounds = animData["bounds"]
+            swLat, swLon = bounds[0]
+            neLat, neLon = bounds[1]
+            # lat = self.closestVent[0]
+            # lon = self.closestVent[1]
             
-            jsCommand = f"window.playVideoOverlay({lat}, {lon}, '{videoUrl}');"
+            jsCommand = (
+                f"window.playVideoOverlay("
+                f"{swLat}, {swLon}, {neLat}, {neLon}, \"{videoUrl}\")"
+                f";"
+            )
+                
             self.viewTopo.page().runJavaScript(jsCommand)
-            
-            self.infoBubb.setText(f"Simulating: {videoFile}")
+
+            infoText = animData.get("information", animKey)
+            self.infoBubb.setText(f"{animKey}: {infoText}")
 
         except Exception as error:
             print(f"Run sim error: {error}")
@@ -411,9 +431,9 @@ class LavaGui(QMainWindow):
             print(f"Pause error: {error}")
 
     # Video File Mapping --> When  the backend is linked, this is where the simulations will be mapped
-    def getVideoFile(self, viscosity, ventSize, rate):
+    def getVideoFile(self, viscosity, ventSize, effusion):
         # Map inputs to filename
-        paramKey = (viscosity, ventSize, rate)
+        paramKey = (viscosity, ventSize, effusion)
         
         # Fallback: all point to mlv5_3 
         # until specific files are added for medium/high rates
