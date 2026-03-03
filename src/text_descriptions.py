@@ -17,10 +17,29 @@ DISCLAIMER_TEXT = """
 """
 
 PARAMETER_TEXT = """
+    <b>Global parameters</b>
+    <span style='color:#E9B38D;'>•</span> <b>Small vent radius: </b> 4 pixels <br>
+    <span style='color:#E9B38D;'>•</span> <b>Large vent radius: </b> 8 pixels <br>
+    <span style='color:#E9B38D;'>•</span> <b>coef_u2: </b> 0 <br>
+    <span style='color:#E9B38D;'>•</span> <b>Gravity: </b> 9.81 <br>
+    <span style='color:#E9B38D;'>•</span> <b>Duration of the source: </b>lava is produced
+    from the vent for the full duration of the simulation <br>
+    <span style='color:#E9B38D;'>•</span> <b>Low effusion (dt_mult): </b> 20 <br>
+    <span style='color:#E9B38D;'>•</span> <b>Density: </b> 2700 kg.m- 3<br><br>
+    
+    
     <b>Pahoehoe paramters</b> <br>
-    <span style='color:#E9B38D;'>•</span> <br><br>
-    <b>Aa parameters</b> <br>
-    <span style='color:#E9B38D;'>•</span>
+    <span style='color:#E9B38D;'>•</span> <b>Viscosity: </b> 250 Pa.s <br>
+    <span style='color:#E9B38D;'>•</span> <b>Cohesion: </b> 500 Pa <br>
+    <span style='color:#E9B38D;'>•</span> <b>High effusion (dt_mult): </b> 100 <br><br>
+    
+    <b>‘A’ā parameters</b> <br>
+    <span style='color:#E9B38D;'>•</span> <b>Viscosity: </b> 1200 Pa.s <br>
+    <span style='color:#E9B38D;'>•</span> <b>Cohesion: </b> 1000 Pa <br>
+    <span style='color:#E9B38D;'>•</span> <b>High effusion (dt_mult): </b> 300<br>
+    <span style='color:#E9B38D;'>•</span> <b>Low effusion adjusted (dt_mult): </b> 40 (for ‘a’ā
+    flows from a small vent that stalled out with dt_mult of 20_<br>
+    
 
 
 """

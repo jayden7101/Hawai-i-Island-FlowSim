@@ -36,7 +36,9 @@ LAYERS_DIR_PATH = os.path.join(PROJECT_ROOT, "overlayers")
 
 WINDOW_TITLE = "Lava Flow Simulation"
 
-# Map Bridge (JS and Python link)
+"""
+MAP BRIDGE AND PYTHON LINK
+"""
 class MapBridge(QObject):
     def __init__(self, parentWindow):
         super().__init__()
@@ -74,7 +76,9 @@ class MapBridge(QObject):
         except Exception as error:
             print(f"Bridge error: {error}") # In case
 
-# Gui Class (main window)
+"""
+GUI CLASS: the main window
+"""
 class LavaGui(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -94,7 +98,7 @@ class LavaGui(QMainWindow):
 
         # State
         self.closestVent = None
-        self.closestVentFile = None # file for closest vent
+        self.closestVentFile = None 
         self.tempFiles = list()
         self.isDataPlaying = False
 
@@ -243,7 +247,7 @@ class LavaGui(QMainWindow):
         self.addSeparator(layout)
 
     """
-        create radio groups
+    CREATE RADIO GROUP
     """
     def createRadioGroup(self, parentLayout, labelText, optionsList):
         # outer container wraps label and buttons
@@ -285,7 +289,7 @@ class LavaGui(QMainWindow):
         return group
 
     """
-        SETUP MAP AREA
+    SETUP THE MAP AREA
     """
     def setupMapArea(self, parentWidget):
         # RHS Map area builder (func)
@@ -378,7 +382,7 @@ class LavaGui(QMainWindow):
         try:
             self.isDataPlaying = False
             self.closestVent = None
-            self.closestVentFile = None # for file for closest vent
+            self.closestVentFile = None 
             self.currentCoords = None
             
             self.updateButtonState(isPlaying=False)
@@ -431,7 +435,6 @@ class LavaGui(QMainWindow):
                 self.infoBubb.setText("Error: could not load animation data.")
                 return
 
-            # videoFile = self.getVideoFile(viscosity, ventSize, rate )
             videoPath = os.path.join(VIDEO_DIR_PATH, animData["video_file"])
 
             if not os.path.exists(videoPath):
@@ -472,6 +475,10 @@ class LavaGui(QMainWindow):
         except Exception as error:
             print(f"Pause error: {error}")
 
+            
+    """
+    BUTTON FUNCTIONS
+    """
     # disclaimer button toggle; close parameter if disclaimer open
     def toggleDisclaimerPanel(self, checked):
         self.disclaimerBox.setVisible(checked)
@@ -507,14 +514,16 @@ class LavaGui(QMainWindow):
             QMessageBox.Ok
         )
 
-
+    """
+    OVERLAY FUNCTIONS
+    """
     def toggleOverlay(self, ol_filename, ol_btn):
         if ol_filename in self.activeOverlays:
-            self._removeOverlay(ol_filename, ol_btn)
+            self.removeOverlay(ol_filename, ol_btn)
         else:
-            self._addOverlay(ol_filename, ol_btn)
+            self.addOverlay(ol_filename, ol_btn)
 
-    def _addOverlay(self, ol_filename, ol_btn):
+    def addOverlay(self, ol_filename, ol_btn):
         ol_layerPath = os.path.join(LAYERS_DIR_PATH, ol_filename)
         if not os.path.exists(ol_layerPath):
             self.infoBubb.setText(f"Layer file not found: {ol_filename}")
@@ -529,7 +538,7 @@ class LavaGui(QMainWindow):
         ol_btn.setStyleSheet(STYLE_OVERLAY_ON_BTN)
         print(f"Overlay ON: {ol_filename}")
 
-    def _removeOverlay(self, ol_filename, ol_btn):
+    def removeOverlay(self, ol_filename, ol_btn):
         jsCommand = f"window.removeKmzOverlay('{ol_filename}');"
         self.viewTopo.page().runJavaScript(jsCommand)
 
@@ -540,11 +549,10 @@ class LavaGui(QMainWindow):
 
     def clearAllOverlays(self):
         for ol_filename, ol_btn in list(self.activeOverlays.items()):
-            self._removeOverlay(ol_filename, ol_btn)
+            self.removeOverlay(ol_filename, ol_btn)
         print ("All overlays have been cleared.")
         
-
-
+    # temp file cleaning
     def closeEvent(self, event):
         # Cleanup any tmp files 
         try:
