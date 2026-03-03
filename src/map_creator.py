@@ -1,7 +1,13 @@
 # map_creator.py
 import folium
 import io
+import os
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+KMZ_PLUGIN_PATH = os.path.join(PROJECT_ROOT, "js", "leaflet-kmz.js")
+
+# def create_big_island_map(kmz_plugin_path):
 def create_big_island_map():
     """
     Creates a Folium map of the Big Island with preset center marker,
@@ -32,6 +38,14 @@ def create_big_island_map():
 
     # Add a preset marker at the center
     folium.Marker(center_coords, tooltip="Big Island").add_to(folium_map)
+
+    #inject leaflet-kmz plugin here
+    with open(KMZ_PLUGIN_PATH, "r", encoding = "utf-8") as f:
+        kmz_plugin_js = f.read()
+
+    folium_map.get_root().html.add_child(folium.Element(
+        f'<script>{kmz_plugin_js}</script>'
+    ))
 
     # Save map to bytes
     map_bytes = io.BytesIO()

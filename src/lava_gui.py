@@ -7,26 +7,32 @@ from PyQt5.QtCore import QUrl, QObject, pyqtSlot, Qt, QFile, QIODevice
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QFormLayout, QLabel, QPushButton, QRadioButton, QButtonGroup,
-    QSplitter, QFrame, QMessageBox, QTabWidget,QTextEdit, QScrollArea)
+    QSplitter, QFrame, QMessageBox, QTabWidget,QTextEdit, QScrollArea,
+    QDialog, QVBoxLayout, QTextEdit, QSizePolicy)
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtGui import QFontInfo
 
 from map_creator import create_big_island_map
-from vent_utils import *
 
+# supplementary script imports
+from vent_utils import *
 from style_sheets import *
 from text_descriptions import *
+from overlay_config import *
 
 # Configuration/Consts
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
 # Paths for assets
-ICON_PATH = os.path.join(PROJECT_ROOT, "images", "volcano_icon.png")
+ICON_PATH = os.path.join(PROJECT_ROOT, "images", "volcano_icon.png") 
 JS_BRIDGE_PATH = os.path.join(PROJECT_ROOT, "js", "map_bridge.js")
 VIDEO_DIR_PATH = os.path.join(PROJECT_ROOT, "animation_videos")
+#KMZ plugin used for displaying kmz,kml files directly as overlays
+KMZ_PLUGIN_PATH = os.path.join(PROJECT_ROOT, "js", "leaflet-kmz.js")
+LAYERS_DIR_PATH = os.path.join(PROJECT_ROOT, "overlayers")
 
 WINDOW_TITLE = "Lava Flow Simulation"
 
@@ -53,7 +59,7 @@ class MapBridge(QObject):
 
             closestVent = ventData[0]
             distanceKm = ventData[1]
-            ventFile = ventData[3] # vent
+            ventFile = ventData[3] 
             
             self.parentWindow.closestVent = closestVent
             self.parentWindow.closestVentFile = ventFile
@@ -90,7 +96,10 @@ class LavaGui(QMainWindow):
         self.closestVent = None
         self.closestVentFile = None # file for closest vent
         self.tempFiles = list()
-        self.isDataPlaying = False 
+        self.isDataPlaying = False
+
+        # track active layers
+        self.activeOverlays = {}
 
         # Splitter 
         windowSplit = QSplitter(Qt.Horizontal)
@@ -111,6 +120,7 @@ class LavaGui(QMainWindow):
 
         self.setCentralWidget(windowSplit)
 
+    # left pane controls
     def setupControls(self, panel):
         screen = QApplication.primaryScreen().availableGeometry()
         btn_width = int(screen.width()*.08)
@@ -119,7 +129,12 @@ class LavaGui(QMainWindow):
         panel.setLayout(layout)
 
         hBox = QHBoxLayout()
-        
+
+        """
+        the top row of the left pane includes the info button, disclaimer
+        button, parameter button, documentation
+        """
+        # info button
         self.btnInfo = QPushButton("i")
         self.btnInfo.setFixedSize(30, 30)
         self.btnInfo.setStyleSheet(STYLE_INFO_BTN)
@@ -139,9 +154,17 @@ class LavaGui(QMainWindow):
         self.btnParameter.clicked.connect(self.toggleParameterPanel)
         self.btnParameter.setFixedWidth(btn_width)
 
+        # sources button
+        self.btnSources = QPushButton ("d")
+        self.btnSources.setFixedSize(30, 30)
+        self.btnSources.setStyleSheet(STYLE_SOURCE_BTN)
+        self.btnSources.clicked.connect(self.showSource)
+
+        # add buttons to the pane
         hBox.addWidget(self.btnInfo)
         hBox.addWidget(self.btnDisclaimer)
         hBox.addWidget(self.btnParameter)
+        hBox.addWidget(self.btnSources)
 
         hBox.addStretch()
         
@@ -182,7 +205,7 @@ class LavaGui(QMainWindow):
 
         layout.addStretch()
 
-        # Action bttns
+        # Action bttns: run/reset
         self.btnStart = QPushButton("RUN SIMULATION")
         self.btnStart.setStyleSheet(STYLE_RUN_BTN)
         self.btnStart.clicked.connect(self.handleRunClick)
@@ -192,6 +215,32 @@ class LavaGui(QMainWindow):
         self.btnReset.setStyleSheet(STYLE_RESET_BTN)
         self.btnReset.clicked.connect(self.handleResetClick)
         layout.addWidget(self.btnReset)
+
+        # overlays section
+        self.addSeparator(layout)
+        overlayLabel = QLabel("Map Overlays")
+        overlayLabel.setStyleSheet(STYLE_CONFIG_LABELS)
+        layout.addWidget(overlayLabel)
+
+        # clear all button
+        self.btnClearOverlays = QPushButton( "x Clear All Overlays")
+        self.btnClearOverlays.setStyleSheet(STYLE_CLEAR_BTN)
+        self.btnClearOverlays.setFixedHeight(34)
+        self.btnClearOverlays.clicked.connect(self.clearAllOverlays)
+        layout.addWidget(self.btnClearOverlays)
+
+        # overlay toggles
+        self.overlayBtns = {}
+        for label, ol_filename in OVERLAY_LAYERS:
+            ol_btn = QPushButton(f" o {label}")
+            ol_btn.setStyleSheet(STYLE_OVERLAY_OFF_BTN)
+            ol_btn.setFixedHeight(28)
+            ol_btn.setCheckable(True)
+            ol_btn.clicked.connect(lambda checked, f = ol_filename, b = ol_btn: self.toggleOverlay(f, b))
+            layout.addWidget(ol_btn) # add the buttons
+            self.overlayBtns[ol_filename] = ol_btn
+
+        self.addSeparator(layout)
 
     """
         create radio groups
@@ -246,20 +295,15 @@ class LavaGui(QMainWindow):
         self.infoBubb = QLabel("Status: Idle | Adjust Settings & Click Map!") 
         self.infoBubb.setStyleSheet(STYLE_STATUS_BUBBLE)
         self.infoBubb.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.infoBubb)
+        self.infoBubb.setFixedHeight(36) # ensure top bubble doesnt get too big
+        self.infoBubb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
-        self.mapTab = QTabWidget()
-        self.mapTab.setTabPosition(QTabWidget.South)
+        layout.addWidget(self.infoBubb)
         
         self.viewTopo = QWebEngineView()
         self.initializeMap(self.viewTopo)
-        self.mapTab.addTab(self.viewTopo, "Simulation Map") 
+        layout.addWidget(self.viewTopo)
 
-        self.viewZone = QWebEngineView()
-        self.viewZone.setHtml("<h3>Lava Zone Map (Placeholder)</h3>")  # Not yet implemented but kept the tab
-        self.mapTab.addTab(self.viewZone, "Lava Zone Map")
-        
-        layout.addWidget(self.mapTab)
 
     def initializeMap(self, webView):
         # QWebEngine without the HTML string injection --> I just found it hard to work with :( 
@@ -398,8 +442,6 @@ class LavaGui(QMainWindow):
             bounds = animData["bounds"]
             swLat, swLon = bounds[0]
             neLat, neLon = bounds[1]
-            # lat = self.closestVent[0]
-            # lon = self.closestVent[1]
             
             jsCommand = (
                 f"window.playVideoOverlay("
@@ -430,43 +472,6 @@ class LavaGui(QMainWindow):
         except Exception as error:
             print(f"Pause error: {error}")
 
-    # Video File Mapping --> When  the backend is linked, this is where the simulations will be mapped
-    def getVideoFile(self, viscosity, ventSize, effusion):
-        # Map inputs to filename
-        paramKey = (viscosity, ventSize, effusion)
-        
-        # Fallback: all point to mlv5_3 
-        # until specific files are added for medium/high rates
-        videoMap = {
-            # Low Viscosity
-            ("low", "small", "low"): "mlv5_3.webm",
-            ("low", "small", "medium"): "mlv5_3.webm",
-            ("low", "small", "high"): "mlv5_3.webm",
-            
-            ("low", "medium", "low"): "mlv5_3.webm",
-            ("low", "medium", "medium"): "mlv5_3.webm",
-            ("low", "medium", "high"): "mlv5_3.webm",
-
-            ("low", "large", "low"): "mlv5_3.webm",
-            ("low", "large", "medium"): "mlv5_3.webm",
-            ("low", "large", "high"): "mlv5_3.webm",
-
-            # High Viscosity
-            ("high", "small", "low"): "mlv5_3.webm",
-            ("high", "small", "medium"): "mlv5_3.webm",
-            ("high", "small", "high"): "mlv5_3.webm",
-
-            ("high", "medium", "low"): "mlv5_3.webm",
-            ("high", "medium", "medium"): "mlv5_3.webm",
-            ("high", "medium", "high"): "mlv5_3.webm",
-
-            ("high", "large", "low"): "mlv5_3.webm",
-            ("high", "large", "medium"): "mlv5_3.webm",
-            ("high", "large", "high"): "mlv5_3.webm" ,
-        }
-        # Explicit file --> to prevents crash (once again, when backend is linked htis can all be changed)
-        return videoMap.get(paramKey, "mlv5_3.webm")
-
     # disclaimer button toggle; close parameter if disclaimer open
     def toggleDisclaimerPanel(self, checked):
         self.disclaimerBox.setVisible(checked)
@@ -493,6 +498,52 @@ class LavaGui(QMainWindow):
 
     def showInfo(self):
         QMessageBox.information(self, "About", "1) Click Map\n2) Run/Pause\n3) Reset to start over")
+
+    def showSource(self):
+        QMessageBox.information(
+            self,
+            "Sources",
+            SOURCES_TEXT,
+            QMessageBox.Ok
+        )
+
+
+    def toggleOverlay(self, ol_filename, ol_btn):
+        if ol_filename in self.activeOverlays:
+            self._removeOverlay(ol_filename, ol_btn)
+        else:
+            self._addOverlay(ol_filename, ol_btn)
+
+    def _addOverlay(self, ol_filename, ol_btn):
+        ol_layerPath = os.path.join(LAYERS_DIR_PATH, ol_filename)
+        if not os.path.exists(ol_layerPath):
+            self.infoBubb.setText(f"Layer file not found: {ol_filename}")
+            ol_btn.setChecked(False)
+            return
+        ol_layerUrl = QUrl.fromLocalFile(ol_layerPath).toString()
+        jsCommand = f"window.loadKmzOverlay('{ol_filename}', '{ol_layerUrl}');"
+        self.viewTopo.page().runJavaScript(jsCommand)
+
+        self.activeOverlays[ol_filename] = ol_btn
+        ol_btn.setChecked(True)
+        ol_btn.setStyleSheet(STYLE_OVERLAY_ON_BTN)
+        print(f"Overlay ON: {ol_filename}")
+
+    def _removeOverlay(self, ol_filename, ol_btn):
+        jsCommand = f"window.removeKmzOverlay('{ol_filename}');"
+        self.viewTopo.page().runJavaScript(jsCommand)
+
+        self.activeOverlays.pop(ol_filename, None)
+        ol_btn.setChecked(False)
+        ol_btn.setStyleSheet(STYLE_OVERLAY_OFF_BTN)
+        print(f"Overlay OFF: {ol_filename}")
+
+    def clearAllOverlays(self):
+        for ol_filename, ol_btn in list(self.activeOverlays.items()):
+            self._removeOverlay(ol_filename, ol_btn)
+        print ("All overlays have been cleared.")
+        
+
 
     def closeEvent(self, event):
         # Cleanup any tmp files 

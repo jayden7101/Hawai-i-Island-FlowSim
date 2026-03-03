@@ -24,3 +24,16 @@ PARAMETER_TEXT = """
 
 
 """
+
+SOURCES_TEXT = """
+    See README for full credits.<br><br>
+    <span style='color:#E9B38D;'>•</span> <b>HVERI</b> for Hawaii DEM, overlays<br>
+    <span style='color:#E9B38D;'>•</span> <b>Raruto</b> for the KMZ Leaflet Plugin<br>
+    <span style='color:#E9B38D;'>•</span> <b>Delage, E., & Kelfoun, K. (2020).</b><br>
+    Observatoire de Physique du Globe de Clermont-Ferrand (OPGC): VolcFlow C <br><br>
+    asdasdasd<br><br>
+    asdadsad <br><br>
+    aslkdjald <br><br>
+    asdadadadasd<br><br>
+
+"""

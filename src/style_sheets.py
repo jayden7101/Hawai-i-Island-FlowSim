@@ -9,13 +9,10 @@ COLOR_STATUS_BG = "#FFDBBB"
 
 COLOR_TEXT = "#594b59"
 
-COLOR_RUN_PRESS = "#B9A7A0"
 COLOR_ALMOND = "#DDC5C4"
 COLOR_PORCELAIN = "#FFFBF5"
 COLOR_LT_ORANGE = "#E9B38D"
 COLOR_DK_GRAY = "#382B2B"
-
-
 
 # left and right panes
 STYLE_PANES = f"""
@@ -42,6 +39,15 @@ STYLE_STATUS_BUBBLE = f"""
 
 # info button
 STYLE_INFO_BTN = f"""
+    border-radius: 15px;
+    border: 1px solid #B56831;
+    background-color: {COLOR_LT_ORANGE};
+    font-size: 14px;
+    font-family: Verdana, serif;
+    """
+
+# sources button
+STYLE_SOURCE_BTN = f"""
     border-radius: 15px;
     border: 1px solid #B56831;
     background-color: {COLOR_LT_ORANGE};
@@ -214,4 +220,57 @@ STYLE_SPLITTER = """
     QSplitter::handle {
         background-color: #E9B38D;
     }
+"""
+
+STYLE_OVERLAY_ON_BTN = """
+    QPushButton {
+        background-color: green;
+        color: #fff;
+        font=family: Verdana, serif;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 6px 14px;
+        border-radius: 5px;
+        border: 1px solid #388e3c;
+        text-align: left;
+    }
+    QPushButton:hover {
+        background-color: #43a047;
+    }
+"""
+
+STYLE_OVERLAY_OFF_BTN = """
+    QPushButton {
+        background-color: red;
+        color: #2a2a2a;
+        font-family: Verdana, serif;
+        font-size: 13px;
+        font-weight: normal;
+        padding: 5px 12px;
+        border-radius: 5px;
+        border: 1px solid #aaaaaa
+        text-align: left;
+    }
+    QPushButton:hover {
+        background-color: #b0b0b0;
+    }
+
+"""
+
+STYLE_CLEAR_BTN = """
+    QPushButton{
+        background-color: #e53935;
+        color: #fff;
+        font-family: Verdana, serif;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 6px 14px;
+        border-radius: 5px;
+        border: 1px solid #b71c1c;
+        text-align: left;
+    }
+    QPushButton:hover {
+        background-color: #c62828;
+    }
+
 """
