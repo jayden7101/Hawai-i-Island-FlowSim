@@ -1,4 +1,5 @@
 import sys
+import traceback
 from PyQt5.QtWidgets import QApplication
 from lava_gui import LavaGui
 
@@ -14,6 +15,14 @@ def main():
         
     except Exception as error:
         print(f"Application failed to start: {error}")
+        traceback.print_exc() # print the traceback
+
+# catch crashes that happen outside
+def handle_exception(exc_type, exc_value, exc_traceback):
+    print("unhandled exception:")
+    traceback.print_exception(exc_type, exc_value, exc_traceback)
+
 
 if __name__ == "__main__":
+    sys.excepthook = handle_exception
     main()

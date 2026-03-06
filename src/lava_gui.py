@@ -61,7 +61,7 @@ class MapBridge(QObject):
 
             closestVent = ventData[0]
             distanceKm = ventData[1]
-            ventFile = ventData[3] 
+            ventFile = ventData[2] 
             
             self.parentWindow.closestVent = closestVent
             self.parentWindow.closestVentFile = ventFile
