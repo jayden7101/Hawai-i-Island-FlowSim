@@ -217,16 +217,14 @@ class LavaGui(QMainWindow):
         ol_row.setSpacing(4)
 
         #dropdown toggle to open + close dropdown 
-        self.btnOlDropdown = QPushButton("Overlays ▼")
+        self.btnOlDropdown = QPushButton("Overlays ▶")
         self.btnOlDropdown.setStyleSheet(STYLE_OL_DROPDOWN_BTN)
-        #self.btnOlDropdown.setFixedSize(150, 28)
         self.btnOlDropdown.clicked.connect(self.toggleDropdown)
         ol_row.addWidget(self.btnOlDropdown)
 
         # clear all button
         self.btnClearOverlays = QPushButton( "Clear Overlays")
         self.btnClearOverlays.setStyleSheet(STYLE_CLEAR_BTN)
-        #self.btnClearOverlays.setFixedSize(70, 35)
         self.btnClearOverlays.clicked.connect(self.clearAllOverlays)
         ol_row.addWidget(self.btnClearOverlays)
 
@@ -255,7 +253,7 @@ class LavaGui(QMainWindow):
         
         # Action bttns: run/reset
         self.btnStart = QPushButton("RUN SIMULATION")
-        self.btnStart.setStyleSheet(STYLE_RUN_BTN)
+        self.btnStart.setStyleSheet(STYLE_RUN_PAUSE_BTN)
         self.btnStart.clicked.connect(self.handleRunClick)
         layout.addWidget(self.btnStart)
 
@@ -418,10 +416,10 @@ class LavaGui(QMainWindow):
         # Update button (text/clr)
         if isPlaying:
             self.btnStart.setText("PAUSE SIMULATION")
-            self.btnStart.setStyleSheet(STYLE_PAUSE_BTN)
+            self.btnStart.setStyleSheet(STYLE_RUN_PAUSE_BTN)
         else:
             self.btnStart.setText("RUN / RESUME")
-            self.btnStart.setStyleSheet(STYLE_RUN_BTN)
+            self.btnStart.setStyleSheet(STYLE_RUN_PAUSE_BTN)
 
     def runSimulation(self):
         # Video playback strt
@@ -539,7 +537,7 @@ class LavaGui(QMainWindow):
     def toggleDropdown(self):
         isVisible = self.overlayList.isVisible()
         self.overlayList.setVisible(not isVisible)
-        self.btnOlDropdown.setText("▲  Overlays" if not isVisible else "▼  Overlays")
+        self.btnOlDropdown.setText("▼  Overlays" if not isVisible else "▶  Overlays")
 
     def handleOlClick(self, ol_item):
         ol_filename = ol_item.data(Qt.UserRole)
