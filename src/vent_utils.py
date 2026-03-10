@@ -27,44 +27,66 @@ def haversine_distance(coord1, coord2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return R * c
 
+"""
+this function is for searching for the closest vent to the point selected by the user.
+the map is broken up into 4 quadrants, where each quadrant has a .1 degree overlap in
+the event if a user chooses a location in quadrant x, if the nearest vent to that click
+is actually in quadrant y, it will be able to find that in the overlap.
 
+if no quadrant is found (if a user clicks outside available quadrants), all vents will be
+searched. if the selection falls into an area that has no available vents, all vents will
+be be searched. 
+
+while the min/max latitudes currently encompass the entire area covered by the map in the ui,
+the function will still look at min/max latitude in the event that more quadrants are added
+in the vent_locations.py script (which would be done through editing current quadrants and
+adding new ones).
+
+theoretically, you should not need to adjust this code after adding new quadrants. 
+"""
 def find_closest_vent(user_coord):
     lat, lon = user_coord
+    print(f"\nDEBUGGING: find_closest vent function. searching for {lat:.4f}, {lon:.4f}")
 
-    quadrant_selection = None
-    for quadrant in QUADRANTS:
-        b = quadrant["bounds"] # b for bounds
+    matching_quadrants = [] # to track quadrants a vent is in
+    for i, quadrant in enumerate(QUADRANTS):
+        b = quadrant["bounds"]
+        print(f"DEBUG: check quadrant {i + 1}: lon {b['lon_min']} to {b['lon_max']}")
         if b["lat_min"] <= lat <= b["lat_max"] and b["lon_min"] <= lon <= b["lon_max"]:
-            quadrant_selection = quadrant
-            break
-        
-    # if a location is chosen that falls outside of the defined quadrants,
-    # search through all vents
-    if quadrant_selection is None: 
-        all_vents = { key: vent for q in QUADRANTS for key, vent in q["vents"].items()}
-        vent_search = all_vents
-    else:
-        vent_search = quadrant_selection["vents"]
+            print(f"DEBUG: quadrant{i + 1} is matched")
+            matching_quadrants.append(quadrant)
+        else:
+            print(f"DEBUG: quadrant {i + 1} no match.")
 
-    # run haversine against vents in found quadrant
+    if matching_quadrants:
+        print(f"DEBUG: {len(matching_quadrants)} quadrants matched. continuing search.")
+        vent_search = {key: vent for q in matching_quadrants for key, vent in q["vents"].items()}
+    else:
+        print(f"DEBUG: no quadrants matched, searching all vents")
+        vent_search = {key: vent for q in QUADRANTS for key, vent in q["vents"].items()}
+    print(f"DEBUG: searching {len(vent_search)} vents: {list(vent_search.keys())}")
+
     closest_vent = None
     min_dist = float("inf")
     for vname, vdata in vent_search.items():
-        dist = haversine_distance(user_coord, vdata["coords"])
+        dist= haversine_distance(user_coord, vdata["coords"])
         if dist < min_dist:
             min_dist = dist
             closest_vent = vdata
 
-    # this handles if the user clicks a point that is within a quadrant, but that quadrant
-    # is empty; this is currently the case for quadrant 4, which is why this is needed.
+    # if no vents in quadrant(s) are found, search all vents.
     if closest_vent is None:
-        all_vents = { key: vent for q in QUADRANTS for key, vent in q["vents"].items()}
+        print(f"DEBUG: no matched vents; resorting to searching all vents")
+        all_vents = {key: vent for q in QUADRANTS for key, vent in q["vents"].items()}
         for vname, vdata in all_vents.items():
             dist = haversine_distance(user_coord, vdata["coords"])
             if dist < min_dist:
                 min_dist = dist
                 closest_vent = vdata
-    return closest_vent["coords"], round(min_dist, 3), closest_vent["json"]
+        print(f"DEBUG: all vent search result: {closest_vent['json']} at {round(min_dist, 3)} km")
+
+    print(f"DEBUG: results are {closest_vent['json']} at {round(min_dist, 3)} km")
+    return closest_vent["coords"], round(min_dist, 3), closest_vent["json"]        
 
 """
 ANIMATION PLAYING FUNCTIONS:

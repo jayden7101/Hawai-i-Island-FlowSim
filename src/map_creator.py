@@ -39,7 +39,7 @@ def create_big_island_map():
     # Add a preset marker at the center
     folium.Marker(center_coords, tooltip="Big Island").add_to(folium_map)
 
-    #inject leaflet-kmz plugin here
+    #inject leaflet-kmz plugin for overlay usage (rift zone etc)
     with open(KMZ_PLUGIN_PATH, "r", encoding = "utf-8") as f:
         kmz_plugin_js = f.read()
 

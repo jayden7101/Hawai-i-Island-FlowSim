@@ -15,7 +15,7 @@ def main():
         
     except Exception as error:
         print(f"Application failed to start: {error}")
-        traceback.print_exc() # print the traceback
+        traceback.print_exc() 
 
 # catch crashes that happen outside
 def handle_exception(exc_type, exc_value, exc_traceback):

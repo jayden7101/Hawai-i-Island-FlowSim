@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QFormLayout, QLabel, QPushButton, QRadioButton, QButtonGroup,
     QSplitter, QFrame, QMessageBox, QTabWidget,QTextEdit, QScrollArea,
-    QDialog, QVBoxLayout, QTextEdit, QSizePolicy)
+    QDialog, QVBoxLayout, QTextEdit, QSizePolicy, QListWidget, QListWidgetItem,
+    QAbstractItemView)
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtGui import QIcon, QFont
@@ -178,11 +179,9 @@ class LavaGui(QMainWindow):
         # configuration parameter radio buttons
         # visocisty
         self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low \n(Pahoehoe)", "High \n('A'a)"])
-        self.addSeparator(layout)
         
         # vent size
         self.groupVent = self.createRadioGroup(layout, "Vent Size", ["Small", "Large"])
-        self.addSeparator(layout)
         
         # """"effusion rate""""
         self.groupEff = self.createRadioGroup(layout, "Effusion Rate", ["Low", "High"])
@@ -207,8 +206,53 @@ class LavaGui(QMainWindow):
         self.parameterBox.setVisible(False)
         layout.addWidget(self.parameterBox)
 
-        layout.addStretch()
+        # overlays section
+        overlayLabel = QLabel("Map Overlays")
+        overlayLabel.setStyleSheet(STYLE_CONFIG_LABELS)
+        layout.addWidget(overlayLabel)
+        
 
+        # drop down box for the overlay selection - ol/Ol short for overlay
+        ol_row = QHBoxLayout()
+        ol_row.setSpacing(4)
+
+        #dropdown toggle to open + close dropdown 
+        self.btnOlDropdown = QPushButton("Overlays ▼")
+        self.btnOlDropdown.setStyleSheet(STYLE_OL_DROPDOWN_BTN)
+        #self.btnOlDropdown.setFixedSize(150, 28)
+        self.btnOlDropdown.clicked.connect(self.toggleDropdown)
+        ol_row.addWidget(self.btnOlDropdown)
+
+        # clear all button
+        self.btnClearOverlays = QPushButton( "Clear Overlays")
+        self.btnClearOverlays.setStyleSheet(STYLE_CLEAR_BTN)
+        #self.btnClearOverlays.setFixedSize(70, 35)
+        self.btnClearOverlays.clicked.connect(self.clearAllOverlays)
+        ol_row.addWidget(self.btnClearOverlays)
+
+        ol_row.addStretch()
+        layout.addLayout(ol_row)
+
+        self.overlayList = QListWidget()
+        self.overlayList.setStyleSheet(STYLE_OVERLAY_LIST)
+        self.overlayList.setSelectionMode(QAbstractItemView.NoSelection)
+        self.overlayList.setFocusPolicy(Qt.NoFocus)
+        self.overlayList.setVisible(False)
+        self.overlayList.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        self.overlayItems = {}
+        for label, ol_filename in OVERLAY_LAYERS:
+            ol_item = QListWidgetItem(f" {OVERLAY_OFF} {label}")
+            ol_item.setData(Qt.UserRole, ol_filename)
+            self.overlayList.addItem(ol_item)
+            self.overlayItems[ol_filename] = ol_item
+
+        self.overlayList.itemClicked.connect(self.handleOlClick)
+        layout.addWidget(self.overlayList)
+
+        layout.addStretch()
+        self.addSeparator(layout)
+        
         # Action bttns: run/reset
         self.btnStart = QPushButton("RUN SIMULATION")
         self.btnStart.setStyleSheet(STYLE_RUN_BTN)
@@ -219,32 +263,6 @@ class LavaGui(QMainWindow):
         self.btnReset.setStyleSheet(STYLE_RESET_BTN)
         self.btnReset.clicked.connect(self.handleResetClick)
         layout.addWidget(self.btnReset)
-
-        # overlays section
-        self.addSeparator(layout)
-        overlayLabel = QLabel("Map Overlays")
-        overlayLabel.setStyleSheet(STYLE_CONFIG_LABELS)
-        layout.addWidget(overlayLabel)
-
-        # clear all button
-        self.btnClearOverlays = QPushButton( "x Clear All Overlays")
-        self.btnClearOverlays.setStyleSheet(STYLE_CLEAR_BTN)
-        self.btnClearOverlays.setFixedHeight(34)
-        self.btnClearOverlays.clicked.connect(self.clearAllOverlays)
-        layout.addWidget(self.btnClearOverlays)
-
-        # overlay toggles
-        self.overlayBtns = {}
-        for label, ol_filename in OVERLAY_LAYERS:
-            ol_btn = QPushButton(f" o {label}")
-            ol_btn.setStyleSheet(STYLE_OVERLAY_OFF_BTN)
-            ol_btn.setFixedHeight(28)
-            ol_btn.setCheckable(True)
-            ol_btn.clicked.connect(lambda checked, f = ol_filename, b = ol_btn: self.toggleOverlay(f, b))
-            layout.addWidget(ol_btn) # add the buttons
-            self.overlayBtns[ol_filename] = ol_btn
-
-        self.addSeparator(layout)
 
     """
     CREATE RADIO GROUP
@@ -347,7 +365,7 @@ class LavaGui(QMainWindow):
                 self.infoBubb.setText("JS Bridge File Missing") # In case
 
         except Exception as error:
-            print(f"Script Injection Failed: {error}") # Fallback just in case again
+            print(f"Script Injection Failed: {error}") # Fallback just in case again    
 
         #Pure HTML load 
         try:
@@ -517,41 +535,45 @@ class LavaGui(QMainWindow):
     """
     OVERLAY FUNCTIONS
     """
-    def toggleOverlay(self, ol_filename, ol_btn):
-        if ol_filename in self.activeOverlays:
-            self.removeOverlay(ol_filename, ol_btn)
-        else:
-            self.addOverlay(ol_filename, ol_btn)
 
-    def addOverlay(self, ol_filename, ol_btn):
+    def toggleDropdown(self):
+        isVisible = self.overlayList.isVisible()
+        self.overlayList.setVisible(not isVisible)
+        self.btnOlDropdown.setText("▲  Overlays" if not isVisible else "▼  Overlays")
+
+    def handleOlClick(self, ol_item):
+        ol_filename = ol_item.data(Qt.UserRole)
+        if ol_filename in self.activeOverlays:
+            self.removeOverlay(ol_filename, ol_item)
+        else:
+            self.addOverlay(ol_filename, ol_item)
+
+    def addOverlay(self, ol_filename, ol_item):
         ol_layerPath = os.path.join(LAYERS_DIR_PATH, ol_filename)
         if not os.path.exists(ol_layerPath):
             self.infoBubb.setText(f"Layer file not found: {ol_filename}")
-            ol_btn.setChecked(False)
             return
         ol_layerUrl = QUrl.fromLocalFile(ol_layerPath).toString()
         jsCommand = f"window.loadKmzOverlay('{ol_filename}', '{ol_layerUrl}');"
         self.viewTopo.page().runJavaScript(jsCommand)
-
-        self.activeOverlays[ol_filename] = ol_btn
-        ol_btn.setChecked(True)
-        ol_btn.setStyleSheet(STYLE_OVERLAY_ON_BTN)
+        self.activeOverlays[ol_filename] = ol_item   
+        label = ol_item.text().split(" ", 2)[-1]
+        ol_item.setText(f" {OVERLAY_ON} {label}")
         print(f"Overlay ON: {ol_filename}")
 
-    def removeOverlay(self, ol_filename, ol_btn):
+    def removeOverlay(self, ol_filename, ol_item):
         jsCommand = f"window.removeKmzOverlay('{ol_filename}');"
         self.viewTopo.page().runJavaScript(jsCommand)
-
         self.activeOverlays.pop(ol_filename, None)
-        ol_btn.setChecked(False)
-        ol_btn.setStyleSheet(STYLE_OVERLAY_OFF_BTN)
+        label = ol_item.text().split(" ", 2)[-1]
+        ol_item.setText(f" {OVERLAY_OFF} {label}")
         print(f"Overlay OFF: {ol_filename}")
 
     def clearAllOverlays(self):
-        for ol_filename, ol_btn in list(self.activeOverlays.items()):
-            self.removeOverlay(ol_filename, ol_btn)
-        print ("All overlays have been cleared.")
-        
+        for ol_filename, ol_item in list(self.activeOverlays.items()):
+            self.removeOverlay(ol_filename, ol_item)
+        print("All overlays have been cleared.")
+    
     # temp file cleaning
     def closeEvent(self, event):
         # Cleanup any tmp files 

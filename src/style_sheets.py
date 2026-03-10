@@ -179,7 +179,7 @@ STYLE_DISC_PARAM_BTN = f"""
         border: 1px solid #A79898;
     }}
 """
-# this is the disclaimer and parameter box style setup
+# this is the disclaimer and parameter text box style setup
 STYLE_DISC_PARAM_BOXES = f"""
     QTextEdit {{
         background-color: {COLOR_PORCELAIN};
@@ -215,48 +215,14 @@ STYLE_DISC_PARAM_BOXES = f"""
         subcontrol-origin: margin;
     }}
 """
-
+# splitter
 STYLE_SPLITTER = """
     QSplitter::handle {
         background-color: #E9B38D;
     }
 """
 
-STYLE_OVERLAY_ON_BTN = """
-    QPushButton {
-        background-color: green;
-        color: #fff;
-        font=family: Verdana, serif;
-        font-size: 13px;
-        font-weight: bold;
-        padding: 6px 14px;
-        border-radius: 5px;
-        border: 1px solid #388e3c;
-        text-align: left;
-    }
-    QPushButton:hover {
-        background-color: #43a047;
-    }
-"""
-
-STYLE_OVERLAY_OFF_BTN = """
-    QPushButton {
-        background-color: red;
-        color: #2a2a2a;
-        font-family: Verdana, serif;
-        font-size: 13px;
-        font-weight: normal;
-        padding: 5px 12px;
-        border-radius: 5px;
-        border: 1px solid #aaaaaa
-        text-align: left;
-    }
-    QPushButton:hover {
-        background-color: #b0b0b0;
-    }
-
-"""
-
+# style sheet for overlays
 STYLE_CLEAR_BTN = """
     QPushButton{
         background-color: #e53935;
@@ -264,7 +230,7 @@ STYLE_CLEAR_BTN = """
         font-family: Verdana, serif;
         font-size: 13px;
         font-weight: bold;
-        padding: 6px 14px;
+        padding: 4px 10px;
         border-radius: 5px;
         border: 1px solid #b71c1c;
         text-align: left;
@@ -272,5 +238,61 @@ STYLE_CLEAR_BTN = """
     QPushButton:hover {
         background-color: #c62828;
     }
+"""
 
+OVERLAY_ON  = "🟢"
+OVERLAY_OFF = "🔴"
+
+STYLE_OL_DROPDOWN_BTN = f"""
+    QPushButton {{
+        background-color: {COLOR_ALMOND};
+        color: {COLOR_DK_GRAY};
+        font-family: Verdana, serif;
+        font-size: 13px;
+        font-weight: normal;
+        padding: 4px 10px;
+        border: 1px solid #c2a9a9;
+        border-radius: 5px;
+        text-align: left;
+    }}
+
+    QPushButton:hover {{
+        background-color: #c4b3b3;
+    }}
+"""
+
+STYLE_OVERLAY_LIST = f"""
+    QListWidget {{
+        background-color: {COLOR_PORCELAIN};
+        border: 1px solid #c2a9a9;
+        border-radius: 4px;
+        font-family: Verdana, serif;
+        font-size: 13px;
+        color: {COLOR_DK_GRAY};
+        padding: 2px;
+        outline: 0;
+    }}
+    QListWidget::item {{
+        padding: 5px 8px;
+        border-radius: 3px;
+    }}
+    QListWidget::item:hover {{
+        background-color: {COLOR_ALMOND};
+    }}
+    QScrollBar:vertical{{
+        width: 10px;
+        background: #f0f0f0;
+        border-radius: 5px;
+    }}
+    QScrollBar::handle:vertical {{
+        background: {COLOR_LT_ORANGE};
+        border-radius: 5px;
+        min-height: 20px;
+    }}
+    QScrollBar::handle:vertical:hover {{
+        background: #bcaaa4;
+    }}
+    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+        height: 0px;
+    }}
 """

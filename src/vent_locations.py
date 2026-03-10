@@ -2,20 +2,23 @@
 VENT LOCATION FILE:
 currently, the island has been broken down into 4 quadrants based on longitude; while the current
 implementation does not need this due to the number of vents, this can hopefully help improve
-efficiency if more vents are added.
+efficiency if enough vents are added that speed could be impacted.
 to add a vent:
     "ventname/id": { "json": "jsonfilename.json", "coords": [latitude, longitude]}
 
 the min/max latitude is the same for all quadrants and should encompass the entire latitude range
-that was set in map_creation.py.
+that was set in map_creation.py. 
 in the event that there's a rogue click or something happens outside of the quadrants, there is
-a method to handle that that will loop through all vents in the vents_util.py script. 
+a method to handle that that will loop through all vents in the vents_util.py script.
+
+the search through quadrants/vents is handled in such a way that you should be able to add new quadrants
+as needed without needing to touch the vent_utils.py script. 
 """
 
 
 QUADRANTS = [
      { # QUADRANT 1
-        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -156.073, "lon_max": -155.723},
+        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -156.073, "lon_max": -155.623},
         "vents": {
             "mlv12":  {"json": "mlv12.json",  "coords": [19.1681, -155.7365]},
             "mlv68": {"json": "mlv68.json", "coords": [19.1267, -155.7367]},
@@ -29,7 +32,7 @@ QUADRANTS = [
             }
         },
     { # QUADRANT 2
-        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -155.723, "lon_max": -155.373},
+        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -155.723, "lon_max": -155.273},
         "vents": {
             "mlv9":  {"json": "mlv9.json",  "coords": [19.0541, -155.6781]},
             "mlv21": {"json": "mlv21.json", "coords": [19.3213, -155.709]},
@@ -43,7 +46,7 @@ QUADRANTS = [
             }
         },
     { # QUADRANT 3
-        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -155.373, "lon_max": -155.023},
+        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -155.373, "lon_max": -154.923},
         "vents": {
             "mlv59":  {"json": "mlv59.json",  "coords": [19.5591, -155.2292]},
             "mlv60": {"json": "mlv60.json", "coords": [19.5248, -155.2274]},
@@ -54,7 +57,7 @@ QUADRANTS = [
             }
         },
      { # QUADRANT 4
-        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -155.023, "lon_max": -154.570},
+        "bounds": {"lat_min": 18.8431, "lat_max": 20.4565, "lon_min": -155.023, "lon_max": -154.999},
         "vents": {}
         }       
     ]
