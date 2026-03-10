@@ -17,7 +17,7 @@ DISCLAIMER_TEXT = """
 """
 
 PARAMETER_TEXT = """
-    <b>Global parameters</b>
+    <b>Global parameters</b><br>
     <span style='color:#E9B38D;'>•</span> <b>Small vent radius: </b> 4 pixels <br>
     <span style='color:#E9B38D;'>•</span> <b>Large vent radius: </b> 8 pixels <br>
     <span style='color:#E9B38D;'>•</span> <b>coef_u2: </b> 0 <br>
@@ -25,7 +25,8 @@ PARAMETER_TEXT = """
     <span style='color:#E9B38D;'>•</span> <b>Duration of the source: </b>lava is produced
     from the vent for the full duration of the simulation <br>
     <span style='color:#E9B38D;'>•</span> <b>Low effusion (dt_mult): </b> 20 <br>
-    <span style='color:#E9B38D;'>•</span> <b>Density: </b> 2700 kg.m- 3<br><br>
+    <span style='color:#E9B38D;'>•</span> <b>Density: </b> 2700 kg.m- 3<br>
+    <span style='color:#E9B38D;'>•</span> <b>Framerate: </b> 10<br><br>
     
     
     <b>Pahoehoe paramters</b> <br>
