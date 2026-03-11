@@ -81,7 +81,15 @@ STYLE_SOURCE_BTN = f"""
     background-color: {COLOR_LT_ORANGE};
     font-size: 14px;
     font-family: Verdana, serif;
-    """
+"""
+
+# spaces for radio buttons/flow config options
+STYLE_RADIO_BOXES = f"""
+    QWidget {{
+        background-color: {COLOR_PORCELAIN};
+        border-radius: 6px;
+            }}
+"""
 
 # run & pause button
 STYLE_RUN_PAUSE_BTN = f"""

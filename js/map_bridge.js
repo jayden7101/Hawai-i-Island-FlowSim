@@ -25,6 +25,13 @@ function findAndHookMap() {
 
     window.leafletMap = mapInstance;
 
+    // make the animation pane z index than the default 400 so that it displays
+    // over the overlays instead of under them
+    if (!window.leafletMap.getPane('videoPane')) {
+        window.leafletMap.createPane('videoPane');
+        window.leafletMap.getPane('videoPane').style.zIndex = 500;
+    }
+
     mapInstance.on('click', function (e ) {
         if (window.bridge){ 
             window.bridge.sendCoordinates(e.latlng.lat, e.latlng.lng);
@@ -36,7 +43,7 @@ function findAndHookMap() {
 window.currentVideoElement =null;
 
 // added swlat/lon, nelat/lon
-window.playVideoOverlay = function(swLat, swLon, neLat, neLon ,videoUrl) {
+window.playVideoOverlay = function(swLat, swLon, neLat, neLon, videoUrl) {
     // Play/resume vid function
     try {
         if (!window.leafletMap) return;
@@ -58,10 +65,14 @@ window.playVideoOverlay = function(swLat, swLon, neLat, neLon ,videoUrl) {
             [neLat, neLon]
         ];
 
+        
         window.currentVideoLayer = L.videoOverlay(
             videoUrl,
             bounds,
-            { autoplay: true, loop: true, opacity: 0.8, interactive: false }
+            { 
+                autoplay: true, loop: true, opacity: 0.8, interactive: false,
+                pane: 'videoPane' // assign to videoPane so anim plays over overlays
+             }
         ).addTo(window.leafletMap);
         
         // Get elemnt (for control)

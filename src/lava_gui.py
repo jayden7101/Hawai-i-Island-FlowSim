@@ -22,6 +22,7 @@ from vent_utils import *
 from style_sheets import *
 from text_descriptions import *
 from overlay_config import *
+from scrubber import Scrubber
 
 # Configuration/Consts
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -217,8 +218,9 @@ class LavaGui(QMainWindow):
         ol_row.setSpacing(4)
 
         #dropdown toggle to open + close dropdown 
-        self.btnOlDropdown = QPushButton("Overlays ▶")
+        self.btnOlDropdown = QPushButton("Overlay Options ▶")
         self.btnOlDropdown.setStyleSheet(STYLE_OL_DROPDOWN_BTN)
+        
         self.btnOlDropdown.clicked.connect(self.toggleDropdown)
         ol_row.addWidget(self.btnOlDropdown)
 
@@ -250,6 +252,10 @@ class LavaGui(QMainWindow):
 
         layout.addStretch()
         self.addSeparator(layout)
+
+        # scrubber widget
+        self.scrubber = Scrubber()
+        layout.addWidget(self.scrubber)
         
         # Action bttns: run/reset
         self.btnStart = QPushButton("RUN SIMULATION")
@@ -268,12 +274,7 @@ class LavaGui(QMainWindow):
     def createRadioGroup(self, parentLayout, labelText, optionsList):
         # outer container wraps label and buttons
         outerContainer = QWidget()
-        outerContainer.setStyleSheet(f"""
-            QWidget {{
-                background-color: {COLOR_PORCELAIN};
-                border-radius: 6px;
-            }}
-        """)
+        outerContainer.setStyleSheet(STYLE_RADIO_BOXES)
         outerLayout = QVBoxLayout()
         outerLayout.setContentsMargins(8, 6, 8, 6)
         outerLayout.setSpacing(4)
@@ -323,6 +324,7 @@ class LavaGui(QMainWindow):
         self.viewTopo = QWebEngineView()
         self.initializeMap(self.viewTopo)
         layout.addWidget(self.viewTopo)
+        self.scrubber.setPage(self.viewTopo.page())
 
 
     def initializeMap(self, webView):
@@ -408,6 +410,7 @@ class LavaGui(QMainWindow):
             
             jsCommand = "window.removeVideoOverlay();"
             self.viewTopo.page().runJavaScript(jsCommand)
+            self.scrubber.simulationReset()
             
         except Exception as error:
             print(f"Reset error: {error}")
@@ -469,6 +472,7 @@ class LavaGui(QMainWindow):
             )
                 
             self.viewTopo.page().runJavaScript(jsCommand)
+            self.scrubber.simulationStarted()
 
             infoText = animData.get("information", animKey)
             self.infoBubb.setText(f"{animKey}: {infoText}")
@@ -484,14 +488,14 @@ class LavaGui(QMainWindow):
             
             jsCommand = "window.pauseVideoOverlay();"
             self.viewTopo.page().runJavaScript(jsCommand)
+            self.scrubber.simulationPaused()
             
             self.infoBubb.setText("Simulation Paused")
             print("SIMULATION PAUSED")
             
         except Exception as error:
             print(f"Pause error: {error}")
-
-            
+         
     """
     BUTTON FUNCTIONS
     """
@@ -532,12 +536,13 @@ class LavaGui(QMainWindow):
 
     """
     OVERLAY FUNCTIONS
+    ol prefix indicates that this is something tied to the overlay
+    functionality (files, etc)
     """
-
     def toggleDropdown(self):
         isVisible = self.overlayList.isVisible()
         self.overlayList.setVisible(not isVisible)
-        self.btnOlDropdown.setText("▼  Overlays" if not isVisible else "▶  Overlays")
+        self.btnOlDropdown.setText("▼  Overlay Options" if not isVisible else "▶  Overlay Options")
 
     def handleOlClick(self, ol_item):
         ol_filename = ol_item.data(Qt.UserRole)

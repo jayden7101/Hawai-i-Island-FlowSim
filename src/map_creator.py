@@ -29,7 +29,8 @@ def create_big_island_map():
         zoom_start=9,
         min_zoom=9,
         max_zoom=14,
-        max_bounds=True
+        max_bounds=True,
+        tiles = None
     )
 
     # Restrict panning to Big Island
@@ -38,6 +39,23 @@ def create_big_island_map():
 
     # Add a preset marker at the center
     folium.Marker(center_coords, tooltip="Big Island").add_to(folium_map)
+
+    folium.TileLayer(
+        tiles = "OpenStreetMap",
+        name = "Street Map",
+        control = True
+    ).add_to(folium_map)
+    
+    # satellite tile layer ( from Esri World Imagery)
+    folium.TileLayer (
+        tiles = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr = "Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+        name = "Satellite",
+        overlay = False,
+        control = True
+    ).add_to(folium_map)
+
+    folium.LayerControl(position = "bottomleft", collapsed = False).add_to(folium_map)
 
     #inject leaflet-kmz plugin for overlay usage (rift zone etc)
     with open(KMZ_PLUGIN_PATH, "r", encoding = "utf-8") as f:

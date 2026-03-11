@@ -39,10 +39,7 @@ PARAMETER_TEXT = """
     <span style='color:#E9B38D;'>•</span> <b>Cohesion: </b> 1000 Pa <br>
     <span style='color:#E9B38D;'>•</span> <b>High effusion (dt_mult): </b> 300<br>
     <span style='color:#E9B38D;'>•</span> <b>Low effusion adjusted (dt_mult): </b> 40 (for ‘a’ā
-    flows from a small vent that stalled out with dt_mult of 20_<br>
-    
-
-
+    flows from a small vent that stalled out with dt_mult of 20<br>
 """
 
 SOURCES_TEXT = """
@@ -50,8 +47,9 @@ SOURCES_TEXT = """
     <span style='color:#E9B38D;'>•</span> <b>HVERI</b> for Hawaii DEM, overlays<br>
     <span style='color:#E9B38D;'>•</span> <b>Raruto</b> for the KMZ Leaflet Plugin<br>
     <span style='color:#E9B38D;'>•</span> <b>Delage, E., & Kelfoun, K. (2020).</b><br>
-    Observatoire de Physique du Globe de Clermont-Ferrand (OPGC): VolcFlow C <br><br>
-    asdasdasd<br><br>
+    Observatoire de Physique du Globe de Clermont-Ferrand (OPGC) for VolcFlow C <br>
+   <span style='color:#E9B38D;'>•</span> <b>Esri, Maxar, Earthstar Geographics and the GIS
+   User Community</b> for the satellite imagery <br><br>
     asdadsad <br><br>
     aslkdjald <br><br>
     asdadadadasd<br><br>
