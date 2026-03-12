@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 
-from PyQt5.QtCore import QUrl, QObject, pyqtSlot, Qt, QFile, QIODevice
+from PyQt5.QtCore import QUrl, QObject, pyqtSlot, Qt, QFile, QIODevice, QTimer
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
     QFormLayout, QLabel, QPushButton, QRadioButton, QButtonGroup,
@@ -13,7 +13,6 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtGui import QFontInfo
 
 from map_creator import create_big_island_map
 
@@ -179,7 +178,7 @@ class LavaGui(QMainWindow):
 
         # configuration parameter radio buttons
         # visocisty
-        self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low \n(Pahoehoe)", "High \n('A'a)"])
+        self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low", "High"])
         
         # vent size
         self.groupVent = self.createRadioGroup(layout, "Vent Size", ["Small", "Large"])
@@ -454,17 +453,30 @@ class LavaGui(QMainWindow):
                 self.infoBubb.setText("Error: could not load animation data.")
                 return
 
+            print(f"DEBUG: animKey={animKey}, animData={animData}")
+
+            if animData is None:
+                self.infoBubb.setText("Error: could not load animation data")
+                return
+
             videoPath = os.path.join(VIDEO_DIR_PATH, animData["video_file"])
+            print(f"DEBUG: looking for video at {videoPath}")
 
             if not os.path.exists(videoPath):
-                self.infoBubb.setText(f"Error: {videoFile} not found.")
+                self.infoBubb.setText(f"Error: video file not found for this configuration.")
+                self.isDataPlaying = False
+                self.updateButtonState(isPlaying = False)
                 return
 
             videoUrl = QUrl.fromLocalFile(videoPath).toString()
             bounds = animData["bounds"]
             swLat, swLon = bounds[0]
             neLat, neLon = bounds[1]
-            
+
+            # commented out for some debugging - occasionally
+            # there are crashes when hitting play especially
+            # after the program is idle.
+            """
             jsCommand = (
                 f"window.playVideoOverlay("
                 f"{swLat}, {swLon}, {neLat}, {neLon}, \"{videoUrl}\")"
@@ -473,12 +485,35 @@ class LavaGui(QMainWindow):
                 
             self.viewTopo.page().runJavaScript(jsCommand)
             self.scrubber.simulationStarted()
+            """
+            # this is the jsCommand that is replacing the above
+            jsCommand = (
+                f"window.playVideoOverlay("
+                f"{swLat}, {swLon}, {neLat}, {neLon}, \"{videoUrl}\")"
+                f";"
+            )
+
+            self._pendingJsCommand = jsCommand
+            # wait 150 milliseconds then call the function
+            # allows webengine to wake up in a responsive state before
+            # video playback continues
+            QTimer.singleShot(150, self.startVideoPlayback)
+            
 
             infoText = animData.get("information", animKey)
             self.infoBubb.setText(f"{animKey}: {infoText}")
 
         except Exception as error:
             print(f"Run sim error: {error}")
+
+    def startVideoPlayback(self):
+        try: # debug statements to try and see where crash may occur
+            print("DEBUT: about to call playVideoOverlay function")
+            self.viewTopo.page().runJavaScript(self._pendingJsCommand)
+            print("DEBUG: playVideoOverlay call returned")
+            self.scrubber.simulationStarted()
+        except Exception as error:
+            print(f"Video playback error: {error}")
 
     def pauseSimulation(self):
         # Pause video funct

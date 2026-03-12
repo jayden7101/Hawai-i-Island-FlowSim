@@ -78,7 +78,7 @@ def _format_time(seconds):
 
 class Scrubber(QWidget):
 
-    INTERVAL_MS = 500
+    INTERVAL_MS = 1000 # increased from 500 to reduce number of py - js calls
 
     def __init__(self, parent = None):
         super().__init__(parent)    

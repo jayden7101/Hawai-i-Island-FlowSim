@@ -42,3 +42,20 @@ python Hawai-i-Island-FlowSim/src/main_window.py
 ### Bonus if possible
 
 6) Dynamic array/configuration system for easier addition of new vents and animations.
+
+
+CREDITS:
+HVO: Lava Zone Map overlay layer
+HVERI: Hawaii Island DEM
+A-Lurker, BrandonXiang, Raruto: Leaflet KMZ Plugin: https://github.com/Raruto/leaflet-kmz
+Volodymyr Agafonkin, originally: Leaflet https://leafletjs.com/, https://github.com/Leaflet/Leaflet
+Delage, E., & Kelfoun, K. (2020). VolcFlow-C. Observatoire de Physique du Globe de Clermont-Ferrand (OPGC). https://doi.org/10.25519/VOLCFLOW-C
+Kelfoun, K. (2023). VolcFlow. LMV, OPGC. https://doi.org/10.25519/VOLCFLOW
+
+DOCUMENTATION:
+PyQt5: https://doc.qt.io/archives/qtforpython-5/
+PyQt5.QtCore: https://doc.qt.io/archives/qtforpython-5/PySide2/QtCore/index.html#module-PySide2.QtCore
+PyQt5.QtWidgets: https://doc.qt.io/archives/qtforpython-5/PySide2/QtWidgets/index.html#module-PySide2.QtWidgets
+PyQt5.QtWebChannel: https://doc.qt.io/archives/qtforpython-5/PySide2/QtWebChannel/index.html#module-PySide2.QtWebChannel
+PyQt5.WebEngineWidgets: thon-5/PySide2/QtWebEngineWidgets/index.html#module-PySide2.QtWebEngineWidgets
+PyQt5.QtGui: https://doc.qt.io/archives/qtforpython-5/PySide2/QtGui/index.html#module-PySide2.QtGui

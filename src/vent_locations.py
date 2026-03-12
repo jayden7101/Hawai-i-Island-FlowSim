@@ -28,7 +28,9 @@ QUADRANTS = [
             "mlv5012": {"json": "mlv5012.json", "coords": [19.1867, -155.7427]},
             "mlv5011": {"json": "mlv5011.json", "coords": [19.2255, -155.7453]},
             "mlv5013": {"json": "mlv5013.json", "coords": [19.2603, -155.7431]},
-            "mlv14": {"json": "mlv14.json", "coords": [19.23748, -155.74508]}
+            "mlv14": {"json": "mlv14.json", "coords": [19.23748, -155.74508]},
+            "mlv5025": {"json": "mlv5025.json", "coords": [19.2799, -155.7339]},
+            "mlv5024": {"json": "mlv5024.json", "coords": [19.2931, -155.7267]}
             }
         },
     { # QUADRANT 2
@@ -42,7 +44,8 @@ QUADRANTS = [
             "mlv5015": {"json": "mlv5015.json", "coords": [19.3110, -155.7167]},
             "mlv5020": {"json": "mlv5020.json", "coords": [19.0896, -155.6979]},
             "mlv5021": {"json": "mlv5021.json", "coords": [19.0734, -155.6813]},
-            "mlv65": {"json": "mlv65.json", "coords": [19.522, -155.4338]}
+            "mlv65": {"json": "mlv65.json", "coords": [19.522, -155.4338]},
+            "mlv5026": {"json": "mlv5026.json", "coords": [19.3127, -155.7173]}
             }
         },
     { # QUADRANT 3
@@ -53,7 +56,8 @@ QUADRANTS = [
             "mlv1000": {"json": "mlv1000.json", "coords": [19.534, -155.2064]},
             "mlv1001": {"json": "mlv1001.json", "coords": [19.5432, -155.2193]},
             "mlv1002": {"json": "mlv1002.json", "coords": [19.5202, -155.2110]},
-            "mlv1003": {"json": "mlv1003.json", "coords": [19.5156, -155.2358]}
+            "mlv1003": {"json": "mlv1003.json", "coords": [19.5156, -155.2358]},
+            "mlv5028": {"json": "mlv5028.json", "coords": [19.5586, -155.3256]}
             }
         },
      { # QUADRANT 4

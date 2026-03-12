@@ -1,0 +1,38 @@
+Values to use - Mauna Loa, Pahoehoe:
+
+
+Cohesion: 500 (100 - 1000 Pa, 500 is middle)
+https://www.sciencedirect.com/science/article/abs/pii/S0377027303003408
+
+Density: 2.67 - 3 kg^3
+middle ground value of 2700?
+https://www.sciencedirect.com/science/article/abs/pii/S0377027303003408
+
+Viscosity: 250 as a middle ground for pahoehoe?
+https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2007JB005035
+"At Mauna Loa, the three-phase treatment provides a fit with the full range of field measured viscosities, giving three-phase mixture viscosities, upon eruption, of 110–140 Pa s (5% crystals, no bubble effect due to sheared vesicles) to 850–1400 Pa s (25–30% crystals, 40–60% spherical vesicles). "
+
+dt_mult: ("effusion rate") used claude to help calculate these: claude suggested 40 which represents 10 cubic meters/second 
+and 10 for a slower, crystallized pahoehoe. 
+it also suggests 20 for a general pahoehoe behavior
+and 400 for 'a'a behavior. 
+maybe a middle ground between a high value for pahoehoe and high value for 'a'a and making it 300. 
+so for a low effusion rate do something like 20 and a high effusion rate do something like 300.
+
+'a'a values:
+
+cohesion: 1000 (upper limit of 10^2 - 10^3)
+rho: still 2700 
+viscosity: 1200 which is a middle ground, as well. we can raise it higher, maybe to be between the 850 and 1400?
+dt_mult: the same as pahoehoe
+
+
+   cohesion = 15000;           %threshold (Pa)
+   rho = 2000;                 %density (kg.m-3)
+   coef_u2 =   0;              %u2-resisting force (turbulence or collisional stress)
+   viscosity = 4000;           %viscosity (Pa.s)
+   dt=0.25;                    %time step fixed by the user in second (iteration duration in s)
+   dtplot = 1.;                %time step of representation (s)
+   tmax 50;                    %duration of the simulation (s)
+   t_stop_source 25;           %duration of the source (s)
+   dt_mult 7.5;                %dt_mult*dt = added quantity for each iteration
