@@ -11,7 +11,7 @@ def main():
     try:
         app = QApplication(sys.argv)
         
-        # GUI is now in lava_gui.py --> dont need the mainwindowdebug file or the big main file anymore
+        # GUI is now in lava_gui.py --> don't need the mainwindowdebug file or the big main file anymore
         window = LavaGui() 
         window.show()
         

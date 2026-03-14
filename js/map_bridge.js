@@ -65,7 +65,11 @@ window.playVideoOverlay = function(swLat, swLon, neLat, neLon, videoUrl) {
             [neLat, neLon]
         ];
 
-        
+        // auto-zoom to video bounds
+        if (window.zoomToAnimationBounds) {
+            window.zoomToAnimationBounds(swLat, swLon, neLat, neLon);
+        }
+
         window.currentVideoLayer = L.videoOverlay(
             videoUrl,
             bounds,

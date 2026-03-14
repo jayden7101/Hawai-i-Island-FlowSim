@@ -2,6 +2,7 @@
 style sheet for the ui. can change colors as desired. comments will indicate what each
 color goes to.
 """
+
 # Theme Colors --> theme can always change if needed or swap out
 # parameter, disclaimer, overlays, run buttons & radio off bg
 COLOR_ALMOND = "#ddc5c4" 
@@ -350,5 +351,82 @@ STYLE_OVERLAY_LIST = f"""
     }}
     QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
         height: 0px;
+    }}
+"""
+
+# theme button
+STYLE_THEME_CIRCLE_BTN = f"""
+    QPushButton {{
+        background-color: {COLOR_ALMOND};
+        color: {COLOR_DK_GRAY};
+        border: 1px solid {COLOR_DUSTY_BEIGE};
+        border-radius: 15px;
+        font-family: Verdana, serif;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0px;
+    }}
+    QPushButton:hover {{
+        background-color: {COLOR_LT_GRAY_BRWN};
+        border: 1px solid {COLOR_GRAY_BRWN};
+    }}
+    QPushButton:pressed {{
+        background-color: {COLOR_DUSTY_BEIGE};
+        border: 1px solid {COLOR_DRK_ORANGE};
+    }}
+"""
+
+# scrubber buttons
+STYLE_SCRUBBER_SLIDER = f"""
+    QSlider::groove:horizontal {{
+        height: 6px;
+        background: {COLOR_DUSTY_BEIGE};
+        border-radius: 3px;
+    }}
+    QSlider::handle:horizontal {{
+        background: {COLOR_DRK_ORANGE};
+        border: 1px solid {COLOR_DRK_ORANGE};
+        width: 14px;
+        height: 14px;
+        margin: -4px 0;
+        border-radius: 7px;
+    }}
+    QSlider::handle:horizontal:hover {{
+        background: {COLOR_LT_ORANGE};
+    }}
+    QSlider::sub-page:horizontal {{
+        background: {COLOR_LT_ORANGE};
+        border-radius: 3px;
+    }}
+"""
+
+STYLE_SCRUBBER_LABEL = f"""
+    font-family: Verdana, serif;
+    font-size: 11px;
+    color: {COLOR_DK_GRAY};
+    background: transparent;
+"""
+
+STYLE_SCRUBBER_BTN = f"""
+    QPushButton {{
+        background-color: {COLOR_ALMOND};
+        color: {COLOR_DK_GRAY};
+        font-size: 14px;
+        border: 1px solid {COLOR_DUSTY_BEIGE};
+        border-radius: 4px;
+        padding: 2px 6px;
+    }}
+    QPushButton:hover {{
+        background-color: {COLOR_DUSTY_BEIGE};
+        border: 1px solid {COLOR_DRK_ORANGE};
+    }}
+    QPushButton:pressed {{
+        background-color: {COLOR_DUSTY_BEIGE};
+        border: 1px solid {COLOR_DRK_ORANGE};
+    }}
+    QPushButton:disabled {{
+        color: #aaa;
+        background-color: {COLOR_PANES};
+        border: 1px solid #ddd;
     }}
 """

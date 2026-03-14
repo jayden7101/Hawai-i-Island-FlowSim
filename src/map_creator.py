@@ -6,6 +6,7 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 KMZ_PLUGIN_PATH = os.path.join(PROJECT_ROOT, "js", "leaflet-kmz.js")
+MAP_HELPERS_PATH = os.path.join(PROJECT_ROOT, "js", "map_helpers.js")
 
 # def create_big_island_map(kmz_plugin_path):
 def create_big_island_map():
@@ -33,9 +34,10 @@ def create_big_island_map():
         tiles = None
     )
 
-    # Restrict panning to Big Island
+    # Restrict zooming and panning to Big Island
     folium_map.fit_bounds(bounds)
-    folium_map.options['maxBounds'] = bounds
+    folium_map.options["maxBounds"] = bounds
+    folium_map.options["maxBoundsViscosity"] = 1.0
 
     # Add a preset marker at the center
     folium.Marker(center_coords, tooltip="Big Island").add_to(folium_map)
@@ -65,7 +67,32 @@ def create_big_island_map():
         f'<script>{kmz_plugin_js}</script>'
     ))
 
+    # inject map_helpers plugin for auto-zooming to vent
+    with open(MAP_HELPERS_PATH, "r", encoding="utf-8") as f:
+        map_helpers_js = f.read()
+
+    folium_map.get_root().html.add_child(folium.Element(
+        f"<script>{map_helpers_js}</script>"
+    ))
+
+    map_name = folium_map.get_name()
+
+    map_name = folium_map.get_name()
+
+    folium_map.get_root().script.add_child(folium.Element(
+        f"""
+        setTimeout(function() {{
+            window.appMap = {map_name};
+            console.log("appMap assigned", !!window.appMap);
+        }}, 0);
+        """
+    ))
+
     # Save map to bytes
     map_bytes = io.BytesIO()
     folium_map.save(map_bytes, close_file=False)
     return map_bytes
+
+
+
+
