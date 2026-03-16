@@ -30,7 +30,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 
 # Paths for assets
-ICON_PATH = os.path.join(PROJECT_ROOT, "images", "volcano_icon.png") 
+ICON_PATH = os.path.join(PROJECT_ROOT, "images", "volcano_icon.ico")
 JS_BRIDGE_PATH = os.path.join(PROJECT_ROOT, "js", "map_bridge.js")
 VIDEO_DIR_PATH = os.path.join(PROJECT_ROOT, "animation_videos")
 #KMZ plugin used for displaying kmz,kml files directly as overlays
@@ -494,12 +494,17 @@ class LavaGui(QMainWindow):
             swLat, swLon = bounds[0]
             neLat, neLon = bounds[1]
             
+            # pass the coordinates of closest vent to JS 
+            ventLat, ventLon = self.closestVent
+            
             jsCommand = (
                 f"window.playVideoOverlay("
-                f"{swLat}, {swLon}, {neLat}, {neLon}, \"{videoUrl}\")"
+                f"{swLat}, {swLon}, {neLat}, {neLon}, "
+                f"{ventLat}, {ventLon}, "
+                f"\"{videoUrl}\")"
                 f";"
             )
-                
+               
             self.viewTopo.page().runJavaScript(jsCommand)
             self.scrubber.simulationStarted()
 

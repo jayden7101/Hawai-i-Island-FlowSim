@@ -43,7 +43,7 @@ function findAndHookMap() {
 window.currentVideoElement =null;
 
 // added swlat/lon, nelat/lon
-window.playVideoOverlay = function(swLat, swLon, neLat, neLon, videoUrl) {
+window.playVideoOverlay = function(swLat, swLon, neLat, neLon, ventLat, ventLon, videoUrl) {
     // Play/resume vid function
     try {
         if (!window.leafletMap) return;
@@ -67,7 +67,7 @@ window.playVideoOverlay = function(swLat, swLon, neLat, neLon, videoUrl) {
 
         // auto-zoom to video bounds
         if (window.zoomToAnimationBounds) {
-            window.zoomToAnimationBounds(swLat, swLon, neLat, neLon);
+            window.zoomToAnimationBounds(swLat, swLon, neLat, neLon, ventLat, ventLon);
         }
 
         window.currentVideoLayer = L.videoOverlay(
