@@ -19,11 +19,13 @@ from map_creator import create_big_island_map
 
 # supplementary script imports
 from vent_utils import *
-import style_sheets as light_theme
-import dark_styles_sheets as dark_theme
 from text_descriptions import *
 from overlay_config import *
 from scrubber import Scrubber
+
+# theme-related imports
+from themes import get_theme, get_theme_button_icon
+from theme_manager import apply_theme
 
 # Configuration/Consts
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -92,8 +94,8 @@ class LavaGui(QMainWindow):
         self.setWindowTitle(WINDOW_TITLE)
         screen = QApplication.primaryScreen().availableGeometry()
         self.resize(int(screen.width() * 0.85), int(screen.height() * 0.85))
-        self.currentTheme = light_theme
-        t = self.currentTheme
+        self.currentThemeName = "light"
+        self.currentTheme = get_theme(self.currentThemeName)
         
         try:
             if os.path.exists(ICON_PATH):
@@ -103,7 +105,8 @@ class LavaGui(QMainWindow):
 
         # State
         self.closestVent = None
-        self.closestVentFile = None 
+        self.closestVentFile = None
+        self.currentCoords = None
         self.tempFiles = list()
         self.isDataPlaying = False
 
@@ -114,11 +117,9 @@ class LavaGui(QMainWindow):
         windowSplit = QSplitter(Qt.Horizontal)
         
         leftPane = QWidget()
-        leftPane.setStyleSheet(t.STYLE_PANES)
         self.setupControls(leftPane)
         
         rightPaneWidget = QWidget()
-        rightPaneWidget.setStyleSheet(t.STYLE_PANES)
         self.setupMapArea(rightPaneWidget)
 
         self.windowSplit = windowSplit
@@ -128,10 +129,10 @@ class LavaGui(QMainWindow):
         windowSplit.addWidget(leftPane)
         windowSplit.addWidget(rightPaneWidget)
         windowSplit.setSizes([250, 790])
-        windowSplit.setStyleSheet(t.STYLE_SPLITTER)
         windowSplit.setHandleWidth(6)
 
         self.setCentralWidget(windowSplit)
+        self.btnTheme.setText(get_theme_button_icon(self.currentThemeName))
         self.applyTheme()
 
     # left pane controls
@@ -141,9 +142,7 @@ class LavaGui(QMainWindow):
 
         layout = QVBoxLayout()
         panel.setLayout(layout)
-
         hBox = QHBoxLayout()
-        t = self.currentTheme
         
         """
         the top row of the left pane includes the info button, disclaimer
@@ -152,26 +151,22 @@ class LavaGui(QMainWindow):
         # info button
         self.btnInfo = QPushButton("i")
         self.btnInfo.setFixedSize(30, 30)
-        self.btnInfo.setStyleSheet(t.STYLE_INFO_BTN)
         self.btnInfo.clicked.connect(self.showInfo)
 
         # disclaimer button
         self.btnDisclaimer = QPushButton("▶  Disclaimer")
-        self.btnDisclaimer.setStyleSheet(t.STYLE_DISC_PARAM_BTN)
         self.btnDisclaimer.setCheckable(True)
         self.btnDisclaimer.clicked.connect(self.toggleDisclaimerPanel)
         self.btnDisclaimer.setFixedWidth(btn_width)
 
         # theme toggle button 
-        self.btnTheme = QPushButton("\u263E")
+        self.btnTheme = QPushButton()
         self.btnTheme.setFixedSize(30, 30)
-        self.btnTheme.setStyleSheet(t.STYLE_THEME_CIRCLE_BTN)
         self.btnTheme.clicked.connect(self.toggleTheme)
         self.btnTheme.setToolTip("Toggle light and dark mode")
 
         # parameter button
-        self.btnParameter = QPushButton("▶  Parameters")
-        self.btnParameter.setStyleSheet(t.STYLE_DISC_PARAM_BTN)
+        self.btnParameter = QPushButton("▶  Parameters") 
         self.btnParameter.setCheckable(True)
         self.btnParameter.clicked.connect(self.toggleParameterPanel)
         self.btnParameter.setFixedWidth(btn_width)
@@ -179,7 +174,6 @@ class LavaGui(QMainWindow):
         # sources button
         self.btnSources = QPushButton ("d")
         self.btnSources.setFixedSize(30, 30)
-        self.btnSources.setStyleSheet(t.STYLE_SOURCE_BTN)
         self.btnSources.clicked.connect(self.showSource)
 
         # add buttons to the pane
@@ -207,7 +201,6 @@ class LavaGui(QMainWindow):
         # text boxes for disclaimer and parameter boxes
         self.disclaimerBox = QTextEdit()
         self.disclaimerBox.setHtml(DISCLAIMER_TEXT)
-        self.disclaimerBox.setStyleSheet(t.STYLE_DISC_PARAM_BOXES)
         self.disclaimerBox.setReadOnly(True)
         self.disclaimerBox.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.disclaimerBox.setFixedHeight(int(screen.height() * 0.30))
@@ -216,7 +209,6 @@ class LavaGui(QMainWindow):
 
         self.parameterBox = QTextEdit()
         self.parameterBox.setHtml(PARAMETER_TEXT)
-        self.parameterBox.setStyleSheet(t.STYLE_DISC_PARAM_BOXES)
         self.parameterBox.setReadOnly(True)
         self.parameterBox.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.parameterBox.setFixedHeight(int(screen.height() * 0.30))
@@ -225,7 +217,6 @@ class LavaGui(QMainWindow):
 
         # overlays section
         self.overlayLabel = QLabel("Map Overlays")
-        self.overlayLabel.setStyleSheet(t.STYLE_CONFIG_LABELS)
         layout.addWidget(self.overlayLabel)
 
 
@@ -235,14 +226,12 @@ class LavaGui(QMainWindow):
 
         #dropdown toggle to open + close dropdown
         self.btnOlDropdown = QPushButton("Overlay Options ▶")
-        self.btnOlDropdown.setStyleSheet(t.STYLE_OL_DROPDOWN_BTN)
 
         self.btnOlDropdown.clicked.connect(self.toggleDropdown)
         ol_row.addWidget(self.btnOlDropdown)
 
         # clear all button
         self.btnClearOverlays = QPushButton( "Clear Overlays")
-        self.btnClearOverlays.setStyleSheet(t.STYLE_CLEAR_BTN)
         self.btnClearOverlays.clicked.connect(self.clearAllOverlays)
         ol_row.addWidget(self.btnClearOverlays)
 
@@ -250,7 +239,6 @@ class LavaGui(QMainWindow):
         layout.addLayout(ol_row)
 
         self.overlayList = QListWidget()
-        self.overlayList.setStyleSheet(t.STYLE_OVERLAY_LIST)
         self.overlayList.setSelectionMode(QAbstractItemView.NoSelection)
         self.overlayList.setFocusPolicy(Qt.NoFocus)
         self.overlayList.setVisible(False)
@@ -258,8 +246,9 @@ class LavaGui(QMainWindow):
 
         self.overlayItems = {}
         for label, ol_filename in OVERLAY_LAYERS:
-            ol_item = QListWidgetItem(f" {t.OVERLAY_OFF} {label}")
+            ol_item = QListWidgetItem(self.formatOverlayText(label, False))
             ol_item.setData(Qt.UserRole, ol_filename)
+            ol_item.setData(Qt.UserRole+1, label)
             self.overlayList.addItem(ol_item)
             self.overlayItems[ol_filename] = ol_item
 
@@ -275,12 +264,10 @@ class LavaGui(QMainWindow):
 
         # Action bttns: run/reset
         self.btnStart = QPushButton("RUN SIMULATION")
-        self.btnStart.setStyleSheet(t.STYLE_RUN_PAUSE_BTN)
         self.btnStart.clicked.connect(self.handleRunClick)
         layout.addWidget(self.btnStart)
 
         self.btnReset = QPushButton("RESET ANIMATION")
-        self.btnReset.setStyleSheet(t.STYLE_RESET_BTN)
         self.btnReset.clicked.connect(self.handleResetClick)
         layout.addWidget(self.btnReset)
 
@@ -288,7 +275,6 @@ class LavaGui(QMainWindow):
     CREATE RADIO GROUP
     """
     def createRadioGroup(self, parentLayout, labelText, optionsList):
-        t = self.currentTheme
         if not hasattr(self, "themeRadioContainers"):
             self.themeRadioContainers = []
         if not hasattr(self, "themeRadioLabels"):
@@ -298,7 +284,6 @@ class LavaGui(QMainWindow):
             
         # outer container wraps label and buttons
         outerContainer = QWidget()
-        outerContainer.setStyleSheet(t.STYLE_RADIO_BOXES)
         outerLayout = QVBoxLayout()
         outerLayout.setContentsMargins(8, 6, 8, 6)
         outerLayout.setSpacing(4)
@@ -306,7 +291,6 @@ class LavaGui(QMainWindow):
 
         # label is now inside the container
         label = QLabel(labelText)
-        label.setStyleSheet(t.STYLE_CONFIG_LABELS + "border: none; background-color: transparent;")
         outerLayout.addWidget(label)
         self.themeRadioLabels.append(label)
         self.themeRadioContainers.append(outerContainer)
@@ -319,7 +303,6 @@ class LavaGui(QMainWindow):
 
         for idx, text in enumerate(optionsList):
             rb = QRadioButton(text)
-            rb.setStyleSheet(t.STYLE_RADIO_BTN)
             if idx == 0:
                 rb.setChecked(True)
             group.addButton(rb, idx)
@@ -338,11 +321,9 @@ class LavaGui(QMainWindow):
     def setupMapArea(self, parentWidget):
         # RHS Map area builder (func)
         layout = QVBoxLayout()
-        t = self.currentTheme
         parentWidget.setLayout(layout)
 
         self.infoBubb = QLabel("Status: Idle | Adjust Settings & Click Map!") 
-        self.infoBubb.setStyleSheet(t.STYLE_STATUS_BUBBLE)
         self.infoBubb.setAlignment(Qt.AlignCenter)
         self.infoBubb.setFixedHeight(36) # ensure top bubble doesnt get too big
         self.infoBubb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -444,15 +425,11 @@ class LavaGui(QMainWindow):
             print(f"Reset error: {error}")
 
     def updateButtonState(self, isPlaying):
-        t = self.currentTheme
-        # Update button (text/clr)
         if isPlaying:
             self.btnStart.setText("PAUSE SIMULATION")
-            self.btnStart.setStyleSheet(t.STYLE_RUN_PAUSE_BTN)
         else:
             self.btnStart.setText("RUN / RESUME")
-            self.btnStart.setStyleSheet(t.STYLE_RUN_PAUSE_BTN)
-
+    
     def runSimulation(self):
         # Video playback strt
         try:
@@ -534,50 +511,17 @@ class LavaGui(QMainWindow):
     Theme Functions      
     """
     def applyTheme(self):
-        t = self.currentTheme
-
-        self.btnInfo.setStyleSheet(t.STYLE_INFO_BTN)
-        self.btnDisclaimer.setStyleSheet(t.STYLE_DISC_PARAM_BTN)
-        self.btnParameter.setStyleSheet(t.STYLE_DISC_PARAM_BTN)
-        self.btnSources.setStyleSheet(t.STYLE_SOURCE_BTN)
-
-        self.disclaimerBox.setStyleSheet(t.STYLE_DISC_PARAM_BOXES)
-        self.parameterBox.setStyleSheet(t.STYLE_DISC_PARAM_BOXES)
-
-        self.btnOlDropdown.setStyleSheet(t.STYLE_OL_DROPDOWN_BTN)
-        self.btnClearOverlays.setStyleSheet(t.STYLE_CLEAR_BTN)
-        self.overlayList.setStyleSheet(t.STYLE_OVERLAY_LIST)
-
-        self.btnStart.setStyleSheet(t.STYLE_RUN_PAUSE_BTN)
-        self.btnReset.setStyleSheet(t.STYLE_RESET_BTN)
-
-        self.infoBubb.setStyleSheet(t.STYLE_STATUS_BUBBLE)
-        self.leftPane.setStyleSheet(t.STYLE_PANES)
-        self.rightPaneWidget.setStyleSheet(t.STYLE_PANES)
-        self.windowSplit.setStyleSheet(t.STYLE_SPLITTER)
-        self.overlayLabel.setStyleSheet(t.STYLE_CONFIG_LABELS)
-        self.scrubber.applyTheme(t)
-
-        
-        self.btnTheme.setStyleSheet(t.STYLE_THEME_CIRCLE_BTN)
-        
-        for container in self.themeRadioContainers:
-            container.setStyleSheet(t.STYLE_RADIO_BOXES)
-
-        for label in self.themeRadioLabels:
-            label.setStyleSheet(t.STYLE_CONFIG_LABELS + "border: none; background-color: transparent;")
-
-        for rb in self.themeRadioButtons:
-            rb.setStyleSheet(t.STYLE_RADIO_BTN)
-
+        self.currentTheme = get_theme(self.currentThemeName)
+        apply_theme(self, self.currentTheme)
+        self.refreshOverlayIcons()
+    
     def toggleTheme(self):
-        if self.currentTheme == light_theme:
-            self.currentTheme = dark_theme
-            self.btnTheme.setText("\u263C")
+        if self.currentThemeName == "light":
+            self.currentThemeName = "dark"
         else:
-            self.currentTheme = light_theme
-            self.btnTheme.setText("\u263E")
+            self.currentThemeName = "light"
 
+        self.btnTheme.setText(get_theme_button_icon(self.currentThemeName))
         self.applyTheme()
 
 
@@ -636,8 +580,19 @@ class LavaGui(QMainWindow):
         else:
             self.addOverlay(ol_filename, ol_item)
 
+    def refreshOverlayIcons(self):
+        for i in range(self.overlayList.count()):
+            item = self.overlayList.item(i)
+            ol_filename = item.data(Qt.UserRole)
+            label = item.data(Qt.UserRole + 1)
+            isActive = ol_filename in self.activeOverlays
+            item.setText(self.formatOverlayText(label, isActive))
+
+    def formatOverlayText(self, label, isActive):
+        icon = self.currentTheme.OVERLAY_ON if isActive else self.currentTheme.OVERLAY_OFF
+        return f" {icon} {label}"
+
     def addOverlay(self, ol_filename, ol_item):
-        t = self.currentTheme
         
         ol_layerPath = os.path.join(LAYERS_DIR_PATH, ol_filename)
         if not os.path.exists(ol_layerPath):
@@ -647,17 +602,16 @@ class LavaGui(QMainWindow):
         jsCommand = f"window.loadKmzOverlay('{ol_filename}', '{ol_layerUrl}');"
         self.viewTopo.page().runJavaScript(jsCommand)
         self.activeOverlays[ol_filename] = ol_item   
-        label = ol_item.text().split(" ", 2)[-1]
-        ol_item.setText(f" {t.OVERLAY_ON} {label}")
+        label = ol_item.data(Qt.UserRole + 1)
+        ol_item.setText(self.formatOverlayText(label, True))
         print(f"Overlay ON: {ol_filename}")
 
     def removeOverlay(self, ol_filename, ol_item):
-        t = self.currentTheme
         jsCommand = f"window.removeKmzOverlay('{ol_filename}');"
         self.viewTopo.page().runJavaScript(jsCommand)
         self.activeOverlays.pop(ol_filename, None)
-        label = ol_item.text().split(" ", 2)[-1]
-        ol_item.setText(f" {t.OVERLAY_OFF} {label}")
+        label = ol_item.data(Qt.UserRole + 1)
+        ol_item.setText(self.formatOverlayText(label, False))
         print(f"Overlay OFF: {ol_filename}")
 
     def clearAllOverlays(self):
