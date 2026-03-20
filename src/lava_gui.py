@@ -109,6 +109,7 @@ class LavaGui(QMainWindow):
         self.currentCoords = None
         self.tempFiles = list()
         self.isDataPlaying = False
+        self.currentAnimKey = None # for tracking current animation 
 
         # track active layers
         self.activeOverlays = {}
@@ -433,8 +434,6 @@ class LavaGui(QMainWindow):
     def runSimulation(self):
         # Video playback strt
         try:
-            self.isDataPlaying = True
-            self.updateButtonState(isPlaying=True)
 
             """
             Parameters to make backend setup easier
@@ -445,14 +444,6 @@ class LavaGui(QMainWindow):
             ventSize = "small" if self.groupVent.checkedId() == 0 else "large"
             effusion = "low" if self.groupEff.checkedId() == 0 else "high"
 
-            # Debug output for backend :) 
-            print("\nSIMULATION PARAMETERS")
-            print(f"Viscosity:     {viscosity}")
-            print(f"Vent Size:     {ventSize}")
-            print(f"Effusion Rate: {effusion}")
-            print(f"Location:      {self.closestVent}")
-            print("---------------------------------------\n")
-
             animKey, animData = get_animation_data(
                 self.closestVentFile, viscosity, ventSize, effusion)
 
@@ -460,11 +451,40 @@ class LavaGui(QMainWindow):
                 self.infoBubb.setText("Error: could not load animation data.")
                 return
 
-            videoPath = os.path.join(VIDEO_DIR_PATH, animData["video_file"])
+            # checking for if vid config is the same since last run
+            changedAnimConfig = (animKey != self.currentAnimKey)
 
+            # if no changes, resume existing video
+
+            if not changedAnimConfig and self.currentAnimKey is not None:
+                self.isDataPlaying = True
+                self.updateButtonState(isPlaying = True)
+                jsCommand = "window.playVideoOverlay();"
+                self.viewTopo.page().runJavaScript(jsCommand)
+                self.scrubber.simulationStarted()
+                infoText = animData.get("information", animKey)
+                self.infoBubb.setText(f"{animKey}: {infoText}")
+                return
+
+            # new configuration or first run -- validate theres a video before
+            # changing the state of the button
+            videoPath = os.path.join(VIDEO_DIR_PATH, animData["video_file"])
             if not os.path.exists(videoPath):
                 self.infoBubb.setText(f"Error: {videoPath} not found.")
                 return
+
+            # new configuration/first run, load fresh
+            self.currentAnimKey = animKey
+            self.isDataPlaying = True
+            self.updateButtonState(isPlaying = True)
+
+            # Debug output for backend :) 
+            print("\nSIMULATION PARAMETERS")
+            print(f"Viscosity:     {viscosity}")
+            print(f"Vent Size:     {ventSize}")
+            print(f"Effusion Rate: {effusion}")
+            print(f"Location:      {self.closestVent}")
+            print("---------------------------------------\n")
 
             videoUrl = QUrl.fromLocalFile(videoPath).toString()
             bounds = animData["bounds"]
@@ -478,8 +498,8 @@ class LavaGui(QMainWindow):
                 f"window.playVideoOverlay("
                 f"{swLat}, {swLon}, {neLat}, {neLon}, "
                 f"{ventLat}, {ventLon}, "
-                f"\"{videoUrl}\")"
-                f";"
+                f"\"{videoUrl}\", true"
+                f");"
             )
                
             self.viewTopo.page().runJavaScript(jsCommand)

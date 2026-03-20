@@ -42,18 +42,20 @@ function findAndHookMap() {
 // State traccker
 window.currentVideoElement =null;
 
-// added swlat/lon, nelat/lon
-window.playVideoOverlay = function(swLat, swLon, neLat, neLon, ventLat, ventLon, videoUrl) {
+// added swlat/lon, nelat/lon, added forceNewConfig for if user switches 
+// animation config
+window.playVideoOverlay = function(swLat, swLon, neLat, neLon, ventLat, ventLon, videoUrl,
+    forceNewConfig
+) {
     // Play/resume vid function
     try {
         if (!window.leafletMap) return;
 
-        // Resume (paused and exiting)
-        if (window.currentVideoElement && window.currentVideoElement.paused) {
+        // resume pause video if pure resume call or forceNewConfig not set
+        if (!forceNewConfig && window.currentVideoElement && window.currentVideoElement.paused) {
             window.currentVideoElement.play();
             return;
         }
-
         // Fresh clean state if video new
         if (window.currentVideoLayer){
             window.leafletMap.removeLayer(window.currentVideoLayer);
