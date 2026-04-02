@@ -1,0 +1,155 @@
+*******************************************
+Hawaii Island Lava Flow Simulation Project
+*******************************************
+
+This document provides a comprehensive technical overview of the 
+interactive lava flow simulation application designed for use on Hawaii's Big Island. 
+The application serves as a visual aid for community education regarding volcanic hazards.
+
+*******************************************
+Authors
+*******************************************
+- Dacotah Livdahl (@github_dacotah)
+- Jayden Ferreira (@github_jayden7101)
+- Austin Jenkins (@github_Jezaen)
+- Melvin Kaneshiro (@github_m6lvink)
+
+*******************************************
+Features
+*******************************************
+
+- Interactive map interface for vent selection
+- Parameter configuration for viscosity, vent size, and effusion rate
+- Video based flow animations with alpha channel transparency
+- Real time simulation control including run, pause, and reset
+
+*******************************************
+Requirements & Setup
+*******************************************
+
+Prerequisites:
+	- Python 3.x
+	- PyQt5
+
+Install Dependencies:
+	- pip install -r requirements.txt
+
+Running the Application:
+	- From the project root directory run:
+		- python Hawai-i-Island-FlowSim/src/main_window.py
+
+*******************************************
+How to Add New Vents
+*******************************************
+
+The project uses a quadrant-based search system to find the nearest vent to a user's click. 
+Follow these steps to expand the simulation library:
+
+	1. Add Metadata: Place the new simulation metadata .json file in the mlv_json folder.
+	
+	2. Add Video Assets: Ensure the corresponding animation videos are placed in the animation_videos directory.
+	
+	3. Register Location: Open vent_locations.py and identify the correct quadrant based on the vent's longitude. 
+	   Add the vent entry to the vents dictionary:
+       "vent_id": {"json": "filename.json", "coords": [latitude, longitude]}.
+	   
+	4. Validation: The vent_utils.py script will automatically use the Haversine formula to include this new vent 
+	   in distance calculations during the next runtime.
+	
+*******************************************
+System Architecture Overview
+*******************************************
+
+The application follows a modular architecture that bridges a Python backend with a web-based map interface.
+
+The Frontend (Python and PyQt5):
+
+The main interface is managed by lava_gui.py, which handles user inputs like viscosity toggles and simulation
+controls. It uses a QWebEngineView to host the interactive map and a QSplitter to manage the layout between the 
+controls and the map area.
+
+The Map Bridge (JavaScript and QWebChannel):
+
+To allow communication between the map and Python, the project utilizes a MapBridge class. When a user clicks 
+the map, a JavaScript event captures the coordinates and sends them to the Python sendCoordinates slot. 
+The Python backend then processes these coordinates to identify the nearest simulation vent.
+
+*******************************************
+Data Pipeline and Technical Specifications
+*******************************************
+
+The simulations are pre-rendered to ensure smooth performance during live presentations.
+
+Map Resolution: Simulations are generated using a 10 meter resolution map to ensure topographic accuracy.
+
+Coordinate System: Geographical data is processed using the EPSG: 32605 coordinate system to maintain correct 
+scaling for the Big Island.
+
+Animation Assets: Simulation results are converted from raw data into transparent .webm or .mov videos. 
+These assets are overlaid onto the Folium map using the playVideoOverlay function in the JavaScript layer.
+
+*******************************************
+Scientific Parameters and Lava Values
+*******************************************
+
+The simulation behavior is governed by specific physical constants to reflect realistic volcanic activity on 
+Mauna Loa and Kilauea.
+
+- Global Constants:
+	- Denisty: 2700 kg/m^3
+	- Gravity: 9.8 ms/s^2
+	
+Flow Specific Parameters:
+
+Parameter				Pahoehoe Value		‘A’ā Value
+
+Viscosity				250 Pa*s			1200 Pa*s
+Cohesion				500 Pa				1000 Pa
+Effusion Rate (Low)		20 (dt_mult)		40 (dt_mult)
+Effusion Rate (High)	100 (dt_mult)		300 (dt_mult)
+
+*******************************************
+Attributions and Open Source Credits
+*******************************************
+
+This project is built upon several open source libraries and scientific datasets. Credit 
+is provided to the following organizations and individuals:
+
+- Core Frameworks:
+	- PyQt5: Used for the primary graphical user interface and window management. 
+		- https://www.riverbankcomputing.com/software/pyqt/
+		
+	- Folium: Utilized as the map engine for rendering interactive geographical data. 
+		- https://github.com/python-visualization/folium
+		
+	- Leaflet: The underlying JavaScript library for mobile-friendly interactive maps. 
+		- https://leafletjs.com/
+	
+- Specialized Plugins and Data:
+	- Leaflet KMZ Plugin: Developed by Raruto and A-Lurker to allow for the direct display of .kmz and .kml overlays. 
+		- https://github.com/Raruto/leaflet-kmz
+		
+	- VolcFlow C: The core simulation engine developed by Delage, E., & Kelfoun, K. (2020).
+		- https://doi.org/10.25519/VOLCFLOW-C
+		- https://doi.org/10.25519/VOLCFLOW
+		
+	- HVERI: Provided the Hawaii Digital Elevation Models (DEM) and various island overlays.
+		- https://hveri.org/
+		
+	- Esri/Maxar: Provided the high-resolution satellite imagery used in the map view.
+	
+*******************************************
+Documentation Links
+*******************************************
+
+- PyQt5: https://doc.qt.io/archives/qtforpython-5/
+
+- QtCore: https://doc.qt.io/archives/qtforpython-5/PySide2/QtCore/index.html#module-PySide2.QtCore
+
+- QtWidgets: https://doc.qt.io/archives/qtforpython-5/PySide2/QtWidgets/index.html#module-PySide2.QtWidgets
+
+- QtWebChannel: https://doc.qt.io/archives/qtforpython-5/PySide2/QtWebChannel/index.html#module-PySide2.QtWebChannel
+
+- WebEngineWidgets: https://www.google.com/search?q=https://doc.qt.io/archives/qtforpython-5/PySide2/QtWebEngineWidgets/index.html%23module-PySide2.QtWebEngineWidgets&authuser=1
+
+- QtGui: https://doc.qt.io/archives/qtforpython-5/PySide2/QtGui/index.html#module-PySide2.QtGui
