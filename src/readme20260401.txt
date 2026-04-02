@@ -136,7 +136,7 @@ is provided to the following organizations and individuals:
 	- HVERI: Provided the Hawaii Digital Elevation Models (DEM) and various island overlays.
 		- https://hveri.org/
 		
-	- Esri/Maxar: Provided the high-resolution satellite imagery used in the map view.
+	- Esri/Maxar: Provided the high-resolution satellite imagery used in the map views.
 	
 *******************************************
 Documentation Links
