@@ -275,28 +275,15 @@ class LavaGui(QMainWindow):
     """
     CREATE RADIO GROUP
     """
+    # Generates radio button group connects each option to auto replay simulation trigger
     def createRadioGroup(self, parentLayout, labelText, optionsList):
-        if not hasattr(self, "themeRadioContainers"):
-            self.themeRadioContainers = []
-        if not hasattr(self, "themeRadioLabels"):
-            self.themeRadioLabels = []
-        if not hasattr(self, "themeRadioButtons"):
-            self.themeRadioButtons = []
-            
-        # outer container wraps label and buttons
-        outerContainer = QWidget()
-        outerLayout = QVBoxLayout()
-        outerLayout.setContentsMargins(8, 6, 8, 6)
-        outerLayout.setSpacing(4)
-        outerContainer.setLayout(outerLayout)
+        t = self.currentTheme
+        
+        # Theme switching
+        if not hasattr(self, "themeRadioContainers"): self.themeRadioContainers = []
+        if not hasattr(self, "themeRadioLabels"): self.themeRadioLabels = []
+        if not hasattr(self, "themeRadioButtons"): self.themeRadioButtons = []
 
-        # label is now inside the container
-        label = QLabel(labelText)
-        outerLayout.addWidget(label)
-        self.themeRadioLabels.append(label)
-        self.themeRadioContainers.append(outerContainer)
-
-        # radio buttons
         group = QButtonGroup(self)
         hLayout = QHBoxLayout()
         hLayout.setSpacing(15)
@@ -304,14 +291,33 @@ class LavaGui(QMainWindow):
 
         for idx, text in enumerate(optionsList):
             rb = QRadioButton(text)
+            rb.setStyleSheet(t.STYLE_RADIO_BTN)
             if idx == 0:
                 rb.setChecked(True)
+
+            # Auto-replay hook
+            rb.clicked.connect(self.auto_replay_simulation)
             group.addButton(rb, idx)
             hLayout.addWidget(rb)
             self.themeRadioButtons.append(rb)
 
         hLayout.addStretch()
+
+        # Outer container box
+        outerContainer = QWidget()
+        outerContainer.setStyleSheet(t.STYLE_RADIO_BOXES)
+        outerLayout = QVBoxLayout()
+        outerLayout.setContentsMargins(8, 6, 8, 6)
+        outerLayout.setSpacing(4)
+        outerContainer.setLayout(outerLayout)
+
+        label = QLabel(labelText)
+        label.setStyleSheet(t.STYLE_CONFIG_LABELS + "border: none; background-color: transparent;")
+        outerLayout.addWidget(label)
         outerLayout.addLayout(hLayout)
+
+        self.themeRadioLabels.append(label)
+        self.themeRadioContainers.append(outerContainer)
 
         parentLayout.addWidget(outerContainer)
         return group
@@ -404,7 +410,14 @@ class LavaGui(QMainWindow):
             self.pauseSimulation()
         else:
             self.runSimulation()
-
+            
+    def auto_replay_simulation(self):
+        """Automatically restarts the simulation if a vent is already selected."""
+        if self.closestVentFile:
+            print(f"Configuration changed for {self.closestVentFile}. Replaying...")
+            self.isDataPlaying = False 
+            self.runSimulation()
+            
     def handleResetClick(self):
         # Stop/Reset Sim
         try:
