@@ -19,7 +19,6 @@ LAYERS_DIR_PATH = os.path.join(PROJECT_ROOT, "overlayers")
 
 OVERLAY_LAYERS = [
     ("Steepest Descent, 3m", "hi_steepest_descent_3m.kmz"),
-    ("Steepest Descent, 750k", "hi_steepest_descent_750k.kmz"),
     ("Mauna Loa Rift Zone", "ml_rift.kmz"),
     ("Kilauea Rift Zone", "k_rift.kmz"),
     ("Mauna Loa Trisdell Outlines", "ml_trisdell_outline.kmz"),
