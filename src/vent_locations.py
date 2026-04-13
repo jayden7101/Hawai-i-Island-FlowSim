@@ -45,7 +45,10 @@ QUADRANTS = [
             "mlv5020": {"json": "mlv5020.json", "coords": [19.0896, -155.6979]},
             "mlv5021": {"json": "mlv5021.json", "coords": [19.0734, -155.6813]},
             "mlv65": {"json": "mlv65.json", "coords": [19.522, -155.4338]},
-            "mlv5026": {"json": "mlv5026.json", "coords": [19.3127, -155.7173]}
+            "mlv5026": {"json": "mlv5026.json", "coords": [19.3127, -155.7173]},
+            "mlv5027": {"json": "mlv5027.json", "coords": [19.3319, -155.6981]},
+            "mlv5022": {"json": "mlv5022.json", "coords": [19.3204, -155.7079]},
+            "mlv5023": {"json": "mlv5023.json", "coords": [19.3038, -155.7203]}
             }
         },
     { # QUADRANT 3
