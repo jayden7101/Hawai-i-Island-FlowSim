@@ -179,3 +179,35 @@ window.removeAllKmzOverlays = function() {
         console.error("KMZ Clear Error (JS Side):", error);
     }
 };
+
+window.showLavaLegend = function(legendHTML) {
+    try {
+        var existing = document.getElementById('lava-zone-legend');
+        if (existing) existing.remove();
+
+        // use the appMap reference set by map_creator, get its container
+        var mapContainer = null;
+        if (window.appMap) {
+            mapContainer = window.appMap.getContainer();
+        }
+
+        // fallback just in case
+        if (!mapContainer) {
+            mapContainer = document.querySelector('.leaflet-container');
+        }
+        if (!mapContainer) {
+            mapContainer = document.body;
+        }
+
+        mapContainer.style.position = 'relative';
+
+        var div = document.createElement('div');
+        div.innerHTML = legendHTML;
+        mapContainer.appendChild(div.firstChild);
+
+    } catch (error) {
+        console.error("Legend inject error (JS Side):", error);
+    }
+};
+
+

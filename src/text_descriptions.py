@@ -50,8 +50,4 @@ SOURCES_TEXT = """
     Observatoire de Physique du Globe de Clermont-Ferrand (OPGC) for VolcFlow C <br>
    <span style='color:#E9B38D;'>•</span> <b>Esri, Maxar, Earthstar Geographics and the GIS
    User Community</b> for the satellite imagery <br><br>
-    asdadsad <br><br>
-    aslkdjald <br><br>
-    asdadadadasd<br><br>
-
 """

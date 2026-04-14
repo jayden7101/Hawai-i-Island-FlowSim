@@ -39,7 +39,9 @@ VIDEO_DIR_PATH = os.path.join(PROJECT_ROOT, "animation_videos")
 KMZ_PLUGIN_PATH = os.path.join(PROJECT_ROOT, "js", "leaflet-kmz.js")
 LAYERS_DIR_PATH = os.path.join(PROJECT_ROOT, "overlayers")
 
+# other constants
 WINDOW_TITLE = "Lava Flow Simulation"
+LAVA_ZONE_FILENAME = "HVO_LavaFlowHazardZones.kmz"
 
 """
 MAP BRIDGE AND PYTHON LINK
@@ -400,6 +402,7 @@ class LavaGui(QMainWindow):
         except Exception as error:
             print(f"Map Load Error: {error}")
 
+    """ ANIMATION FUNCTIONS """
     def handleRunClick(self):
         # Run/Pause (function)
         if not self.closestVent:
@@ -425,8 +428,9 @@ class LavaGui(QMainWindow):
             self.closestVent = None
             self.closestVentFile = None 
             self.currentCoords = None
+            self.currentAnimKey = None # so videos replay when clicking near same vent w same config
             
-            self.updateButtonState(isPlaying=False)
+            self.updateButtonState(isPlaying = False)
             self.infoBubb.setText("Status: Reset | Click map to start new simulation")
             
             print("\nSTATE RESET") 
@@ -468,7 +472,6 @@ class LavaGui(QMainWindow):
             changedAnimConfig = (animKey != self.currentAnimKey)
 
             # if no changes, resume existing video
-
             if not changedAnimConfig and self.currentAnimKey is not None:
                 self.isDataPlaying = True
                 self.updateButtonState(isPlaying = True)
@@ -626,7 +629,6 @@ class LavaGui(QMainWindow):
         return f" {icon} {label}"
 
     def addOverlay(self, ol_filename, ol_item):
-        
         ol_layerPath = os.path.join(LAYERS_DIR_PATH, ol_filename)
         if not os.path.exists(ol_layerPath):
             self.infoBubb.setText(f"Layer file not found: {ol_filename}")
@@ -639,13 +641,30 @@ class LavaGui(QMainWindow):
         ol_item.setText(self.formatOverlayText(label, True))
         print(f"Overlay ON: {ol_filename}")
 
+        # show lavazone legend only when lava zone overview is up 
+        if ol_filename == LAVA_ZONE_FILENAME:
+            self.showLegend()
+
     def removeOverlay(self, ol_filename, ol_item):
         jsCommand = f"window.removeKmzOverlay('{ol_filename}');"
         self.viewTopo.page().runJavaScript(jsCommand)
         self.activeOverlays.pop(ol_filename, None)
         label = ol_item.data(Qt.UserRole + 1)
         ol_item.setText(self.formatOverlayText(label, False))
+
+        # turn the legend off if you shut off lz overlay
+        if ol_filename == LAVA_ZONE_FILENAME:
+            self.hideLegend()
+        
         print(f"Overlay OFF: {ol_filename}")
+
+    # legend for lava zone overlay
+    def showLegend(self):
+        self.viewTopo.page().runJavaScript("window.showLavaLegend();")
+
+    # hide legend when lava zone overlay is not visible
+    def hideLegend(self):
+        self.viewTopo.page().runJavaScript("window.hideLavaLegend();")
 
     def clearAllOverlays(self):
         for ol_filename, ol_item in list(self.activeOverlays.items()):

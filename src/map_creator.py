@@ -7,6 +7,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 KMZ_PLUGIN_PATH = os.path.join(PROJECT_ROOT, "js", "leaflet-kmz.js")
 MAP_HELPERS_PATH = os.path.join(PROJECT_ROOT, "js", "map_helpers.js")
+LEGEND_PATH = os.path.join(PROJECT_ROOT, "js", "legend.js")
 
 # def create_big_island_map(kmz_plugin_path):
 def create_big_island_map():
@@ -75,7 +76,16 @@ def create_big_island_map():
         f"<script>{map_helpers_js}</script>"
     ))
 
-    map_name = folium_map.get_name()
+    #map_name = folium_map.get_name()
+
+    
+    with open(LEGEND_PATH, "r", encoding="utf-8") as f:
+        legend_js = f.read()
+
+    folium_map.get_root().html.add_child(folium.Element(
+        f"<script>{legend_js}</script>" ))
+
+
 
     map_name = folium_map.get_name()
 
@@ -92,7 +102,6 @@ def create_big_island_map():
     map_bytes = io.BytesIO()
     folium_map.save(map_bytes, close_file=False)
     return map_bytes
-
 
 
 
