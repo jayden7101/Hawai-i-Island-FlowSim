@@ -1,60 +1,132 @@
 {
-  "animations": {
-    "mlv5021_1": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_1.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 33.17 m/s and a volume of 315727336.00 cubic meters."
-    },
-    "mlv5021_2": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_2.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 54.72 m/s and a volume of 135260208.00 cubic meters."
-    },
-    "mlv5021_3": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_3.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 300 second lava flow simulation has a maximum velocity of 86.47 m/s and a volume of 579728256.00 cubic meters."
-    },
-    "mlv5021_4": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_4.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 58.84 m/s and a volume of 57664832.00 cubic meters."
-    },
-    "mlv5021_5": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_5.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 27.58 m/s and a volume of 63054696.00 cubic meters. Dt_mult increased to 40 from 20."
-    },
-    "mlv5021_6": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_6.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 48.21 m/s and a volume of 472993664.00 cubic meters."
-    },
-    "mlv5021_7": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_7.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 34.08 m/s and a volume of 135236064.00 cubic meters."
-    },
-    "mlv5021_8": {
-      "vent name": "Mauna Loa Vent 5021",
-      "video_file": "mlv5021/mlv5021_8.webm",
-      "bounds": [[18.902008984, -155.787804604], [19.128755063, -155.503883127]],
-      "loop": true,
-      "information": "This 200 second lava flow simulation has a maximum velocity of 72.66 m/s and a volume of 1159216128.00 cubic meters."
-    }
-  }
+	"animations": {
+		"mlv5021_1": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_1.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 74.20 mph and a volume of 126290.93 olympic swimming pools."
+		},
+		"mlv5021_2": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_2.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 122.41 mph and a volume of 54104.08 olympic swimming pools."
+		},
+		"mlv5021_3": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_3.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 300 second lava flow simulation has a maximum velocity of 193.43 mph and a volume of 231891.30 olympic swimming pools."
+		},
+		"mlv5021_4": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_4.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 131.62 mph and a volume of 23065.93 olympic swimming pools."
+		},
+		"mlv5021_5": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_5.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 61.69 mph and a volume of 25221.88 olympic swimming pools. Dt_mult increased to 40 from 20."
+		},
+		"mlv5021_6": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_6.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 107.84 mph and a volume of 189197.47 olympic swimming pools."
+		},
+		"mlv5021_7": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_7.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 76.23 mph and a volume of 54094.43 olympic swimming pools."
+		},
+		"mlv5021_8": {
+			"vent name": "Mauna Loa Vent 5021",
+			"video_file": "mlv5021/mlv5021_8.webm",
+			"bounds": [
+				[
+					18.902008984,
+					-155.787804604
+				],
+				[
+					19.128755063,
+					-155.503883127
+				]
+			],
+			"loop": true,
+			"information": "This 200 second lava flow simulation has a maximum velocity of 162.54 mph and a volume of 463686.45 olympic swimming pools."
+		}
+	}
 }

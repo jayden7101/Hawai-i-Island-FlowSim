@@ -1,60 +1,132 @@
 {
-  "animations": {
-    "mlv1002_1": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 30.20 m/s and a volume of 31522726.00 cubic meters."
-    },
-    "mlv1002_2": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_2.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 44.31 m/s and a volume of 134470336.00 cubic meters."
-    },
-    "mlv1002_3": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_3.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This 300 second lava flow simulation has a maximum velocity of 66.45 m/s and a volume of 579646144.00 cubic meters."
-    },
-    "mlv1002_4": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_4.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This 350 second lava flow simulation has a maximum velocity of 45.62 m/s and a volume of 157697568.00 cubic meters."
-    },
-    "mlv1002_5": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_5.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This animation not yet made; double check bounds for this configuration."
-    },
-    "mlv1002_6": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_6.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This 250 second lava flow simulation has a maximum velocity of 48.53 m/s and a volume of 473091936.00 cubic meters."
-    },
-    "mlv1002_7": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_7.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This animation not yet made; please double check bounds when updated."
-    },
-    "mlv1002_8": {
-      "vent name": "Mauna Loa Vent 1002",
-      "video_file": "mlv1002/mlv1002_8.webm",
-      "bounds": [[19.413875157, -155.275434870], [19.554814502, -154.991387882]],
-      "loop": true,
-      "information": "This animation not yet made; please double check bounds when updated."
-    }
-  }
+	"animations": {
+		"mlv1002_1": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 67.56 mph and a volume of 12609.09 olympic swimming pools."
+		},
+		"mlv1002_2": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_2.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 99.12 mph and a volume of 53788.13 olympic swimming pools."
+		},
+		"mlv1002_3": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_3.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This 300 second lava flow simulation has a maximum velocity of 148.64 mph and a volume of 231858.46 olympic swimming pools."
+		},
+		"mlv1002_4": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_4.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This 350 second lava flow simulation has a maximum velocity of 102.05 mph and a volume of 63079.03 olympic swimming pools."
+		},
+		"mlv1002_5": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_5.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This animation not yet made; double check bounds for this configuration."
+		},
+		"mlv1002_6": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_6.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This 250 second lava flow simulation has a maximum velocity of 108.56 mph and a volume of 189236.77 olympic swimming pools."
+		},
+		"mlv1002_7": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_7.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This animation not yet made; please double check bounds when updated."
+		},
+		"mlv1002_8": {
+			"vent name": "Mauna Loa Vent 1002",
+			"video_file": "mlv1002/mlv1002_8.webm",
+			"bounds": [
+				[
+					19.413875157,
+					-155.27543487
+				],
+				[
+					19.554814502,
+					-154.991387882
+				]
+			],
+			"loop": true,
+			"information": "This animation not yet made; please double check bounds when updated."
+		}
+	}
 }
