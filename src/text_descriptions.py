@@ -46,8 +46,11 @@ SOURCES_TEXT = """
     See README for full credits.<br><br>
     <span style='color:#E9B38D;'>•</span> <b>HVERI</b> for Hawaii DEM, overlays<br>
     <span style='color:#E9B38D;'>•</span> <b>Raruto</b> for the KMZ Leaflet Plugin<br>
+    <span style='color:#E9B38D;'>•</span> <b>Kelfoun, K. (2023). VolcFlow. LMV, OPGC.</b><br>
     <span style='color:#E9B38D;'>•</span> <b>Delage, E., & Kelfoun, K. (2020).</b><br>
     Observatoire de Physique du Globe de Clermont-Ferrand (OPGC) for VolcFlow C <br>
-   <span style='color:#E9B38D;'>•</span> <b>Esri, Maxar, Earthstar Geographics and the GIS
-   User Community</b> for the satellite imagery <br><br>
+    <span style='color:#E9B38D;'>•</span> <b>Esri, Maxar, Earthstar Geographics and the GIS
+    User Community</b> for the satellite imagery <br>
+    <span style='color:#E9B38D;'>•</span> <b>OpenStreetMap contributors</b> and
+    <b>CARTO</b> for street map.<br><br>
 """
