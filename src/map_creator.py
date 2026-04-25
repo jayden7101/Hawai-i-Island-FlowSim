@@ -43,21 +43,36 @@ def create_big_island_map():
     # Add a preset marker at the center
     folium.Marker(center_coords, tooltip="Big Island").add_to(folium_map)
 
+    """
+    # openstreetmap sometiems has some referer blocking, especially on a first
+    # load, so swapping to cartodb. but leaving in the openstreetmap. if you w
+    # decide you want to swap to osm, just commet out the street map part w carto and
+    # remove the triple quotes above and below these comments.
+    # satellite map is unchanged
+        
     folium.TileLayer(
         tiles = "OpenStreetMap",
         name = "Street Map",
         control = True
     ).add_to(folium_map)
-    
-    # satellite tile layer ( from Esri World Imagery)
-    folium.TileLayer (
-        tiles = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        attr = "Esri, Maxar, Earthstar Geographics, and the GIS User Community",
-        name = "Satellite",
-        overlay = False,
-        control = True
+    """
+
+    # Street map layer - CartoDB instead of OSM to avoid referer blocking
+    folium.TileLayer(
+        tiles="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        name="Street Map",
+        control=True
     ).add_to(folium_map)
 
+    # satellite tile layer from Esri World Imagery - this is unchanged 
+    folium.TileLayer(
+        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+        name="Satellite",
+        overlay=False,
+        control=True
+    ).add_to(folium_map)
     folium.LayerControl(position = "bottomleft", collapsed = False).add_to(folium_map)
 
     #inject leaflet-kmz plugin for overlay usage (rift zone etc)
