@@ -126,17 +126,35 @@ is provided to the following organizations and individuals:
 		- https://leafletjs.com/
 	
 - Specialized Plugins and Data:
-	- Leaflet KMZ Plugin: Developed by Raruto and A-Lurker to allow for the direct display of .kmz and .kml overlays. 
-		- https://github.com/Raruto/leaflet-kmz
+	- Leaflet KMZ Plugin: Developed by Raruto, A-Lurker, BrandonXiang to allow for the direct display of .kmz and .kml overlays. 
+		- Plugin: https://github.com/Raruto/leaflet-kmz
+		- Raruto: https://github.com/Raruto
+		- A-Lurker: https://github.com/a-lurker/
+		- BrandonXiang: https://github.com/brandonxiang/leaflet-geojson-vt
 		
 	- VolcFlow C: The core simulation engine developed by Delage, E., & Kelfoun, K. (2020).
 		- https://doi.org/10.25519/VOLCFLOW-C
+
+	- VolcFlow: (Original MATLAB version)
+		- Kelfoun, K. (2023). VolcFlow. LMV, OPGC. 
 		- https://doi.org/10.25519/VOLCFLOW
 		
 	- HVERI: Provided the Hawaii Digital Elevation Models (DEM) and various island overlays.
 		- https://hveri.org/
+
+	- Hawaii Volcano Observatory (HVO): Hazard map overlay
+		- https://www.usgs.gov/media/files/lava-flow-hazard-zones-island-hawaii-kmz
 		
 	- Esri/Maxar: Provided the high-resolution satellite imagery used in the map view.
+
+	- OpenStreetMap and contributors, CARTO for street map
+		OpenStreetMap
+		- Data is available under Open Database License
+		- https://www.openstreetmap.org/copyright
+
+		CARTO
+		- https://carto.com/basemaps/
+		- https://carto.com/legal/
 	
 *******************************************
 Documentation Links
