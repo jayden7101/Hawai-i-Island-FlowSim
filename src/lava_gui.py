@@ -447,7 +447,11 @@ class LavaGui(QMainWindow):
             self.btnStart.setText("PAUSE SIMULATION")
         else:
             self.btnStart.setText("RUN / RESUME")
-    
+
+
+    """
+    get_animation_data: function from vent_utils.py
+    """
     def runSimulation(self):
         # Video playback strt
         try:
@@ -472,7 +476,10 @@ class LavaGui(QMainWindow):
             changedAnimConfig = (animKey != self.currentAnimKey)
 
             # if no changes, resume existing video
-            if not changedAnimConfig and self.currentAnimKey is not None:
+            # add in the self.isDataPlaying check so that if user clicks on a new location
+            # and that new location maps to the same vent currently playing, an animation will
+            # continue to play
+            if not changedAnimConfig and self.currentAnimKey is not None and self.isDataPlaying:
                 self.isDataPlaying = True
                 self.updateButtonState(isPlaying = True)
                 jsCommand = "window.playVideoOverlay();"

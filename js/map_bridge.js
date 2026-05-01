@@ -126,7 +126,6 @@ window.removeVideoOverlay = function() {
 };
 
 // kmz plugin addition
-
 window.kmzLayers = {};
 
 window.loadKmzOverlay = function(layerId, kmzUrl) {
@@ -154,6 +153,7 @@ window.loadKmzOverlay = function(layerId, kmzUrl) {
     }
 };
 
+// remove an individual overlay that is active
 window.removeKmzOverlay = function(layerId) {
     try {
         if (window.kmzLayers[layerId] && window.leafletMap) {
@@ -166,6 +166,7 @@ window.removeKmzOverlay = function(layerId) {
     }
 };
 
+// remove all active overlays 
 window.removeAllKmzOverlays = function() {
     try {
         for (var layerId in window.kmzLayers) {
@@ -180,6 +181,7 @@ window.removeAllKmzOverlays = function() {
     }
 };
 
+// lava legend (from the legend js script)
 window.showLavaLegend = function(legendHTML) {
     try {
         var existing = document.getElementById('lava-zone-legend');
@@ -210,4 +212,5 @@ window.showLavaLegend = function(legendHTML) {
     }
 };
 
-
+window.showLavaLegend();
+window.hideLavaLegend();

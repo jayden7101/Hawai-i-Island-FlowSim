@@ -90,19 +90,10 @@ def find_closest_vent(user_coord):
 
 """
 ANIMATION PLAYING FUNCTIONS:
+load_vent_animations: get all animations for the vent's json file
+get_animation_key: build specific key based on vent number and lava configuration
+get_animation_data:
 """
-def load_vent_animations(ventFile):
-    path = os.path.join(JSON_DIR, ventFile)
-    print(f"DEBUG: trying to open {path}")        # check if can open
-    print(f"DEBUG: file exists: {os.path.exists(path)}")  # check if file exists
-    try:
-        with open(path, "r", encoding = "utf-8") as f:
-            data = json.load(f)
-        return data.get("animations", {})
-    except Exception as e:
-        print(f"Could not load {path}: {e}")
-    return {}
-
 # maps configurations to their number based on the toggles
 # viscosity, vent size, effusion rate
 ANIMATION_CONFIG_MAP = {
@@ -119,17 +110,21 @@ ANIMATION_CONFIG_MAP = {
 # set a default if there's no configuration for a certain selection
 DEFAULT_ANIMATION_CONFIG = 1
 
+def load_vent_animations(ventFile):
+    path = os.path.join(JSON_DIR, ventFile)
+    print(f"DEBUG: trying to open {path}")        # check if can open
+    print(f"DEBUG: file exists: {os.path.exists(path)}")  # check if file exists
+    try:
+        with open(path, "r", encoding = "utf-8") as f:
+            data = json.load(f)
+        return data.get("animations", {})
+    except Exception as e:
+        print(f"Could not load {path}: {e}")
+    return {}
+
 """
-build animation key for a vent + config selection
+load_vent_animations
 """
-def get_animation_key(ventFile, viscosity, ventSize, effusion):
-    base_name = os.path.splitext(ventFile)[0]
-
-    combo = (viscosity, ventSize, effusion)
-    anim_num = ANIMATION_CONFIG_MAP.get(combo, DEFAULT_ANIMATION_CONFIG)
-
-    return f"{base_name}_{anim_num}"
-
 def get_animation_data(ventFile, viscosity, ventSize, effusion):
     animations = load_vent_animations(ventFile)
     if not animations:
@@ -142,3 +137,18 @@ def get_animation_data(ventFile, viscosity, ventSize, effusion):
         key = next(iter(animations))
 
     return key, animations[key]
+
+"""
+build animation key for a vent + config selection
+viscosity, ventSize and effusion are passed here, but defined in lava_gui
+get_animation_key builds an identifier for a unique vent and configuration.
+"""
+def get_animation_key(ventFile, viscosity, ventSize, effusion):
+    base_name = os.path.splitext(ventFile)[0] # removes the file extension
+
+    combo = (viscosity, ventSize, effusion)
+    anim_num = ANIMATION_CONFIG_MAP.get(combo, DEFAULT_ANIMATION_CONFIG)
+
+    return f"{base_name}_{anim_num}"
+
+
