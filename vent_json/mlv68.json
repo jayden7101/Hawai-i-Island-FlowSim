@@ -1,0 +1,132 @@
+{
+	"animations": {
+		"mlv68_1": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_1.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 350 second simulation reaches a maximum velocity of 98.83 mph and a has a volume of 12821.14 olympic swimming pools."
+		},
+		"mlv68_2": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_2.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 350 second simulation reaches a maximum velocity of 123.90 mph and a has a volume of 54882.22 olympic swimming pools."
+		},
+		"mlv68_3": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_3.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 245 second simulation reaches a maximum velocity of 202.06 mph and a has a volume of 192093.79 olympic swimming pools."
+		},
+		"mlv68_4": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_4.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 350 second simulation reaches a maximum velocity of 140.82 mph and a has a volume of 64105.62 olympic swimming pools."
+		},
+		"mlv68_5": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_5.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 350 second simulation reaches a maximum velocity of 62.30 mph and a has a volume of 12818.82 olympic swimming pools."
+		},
+		"mlv68_6": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_6.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 350 second simulation reaches a maximum velocity of 152.60 mph and a has a volume of 192316.84 olympic swimming pools."
+		},
+		"mlv68_7": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_7.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 350 second simulation reaches a maximum velocity of 90.39 mph and a has a volume of 50961.32 olympic swimming pools."
+		},
+		"mlv68_8": {
+			"vent name": "Mauna Loa Vent 68",
+			"video_file": "mlv68/mlv68_8.webm",
+			"bounds": [
+				[
+					19.011450891,
+					-155.91933802
+				],
+				[
+					19.180953385,
+					-155.664523012
+				]
+			],
+			"loop": true,
+			"information": "This 175 second simulation reaches a maximum velocity of 192.85 mph and a has a volume of 411616.26 olympic swimming pools."
+		}
+	}
+}
