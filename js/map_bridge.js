@@ -61,14 +61,14 @@ window.playVideoOverlay = function(swLat, swLon, neLat, neLon, ventLat, ventLon,
             window.leafletMap.removeLayer(window.currentVideoLayer);
             window.currentVideoElement = null;
         }
-	// changed to swlatlon, nelatlon to account for boundary boxes
+	    // changed to swlatlon, nelatlon to account for boundary boxes
         var bounds = [
             [swLat, swLon], 
             [neLat, neLon]
         ];
 
-        // auto-zoom to video bounds
-        if (window.zoomToAnimationBounds) {
+        // auto-zoom to video bounds - this function is defined in map_helpers.js
+        if (window.autoZoomEnabled && window.zoomToAnimationBounds) {
             window.zoomToAnimationBounds(swLat, swLon, neLat, neLon, ventLat, ventLon);
         }
 
@@ -128,6 +128,7 @@ window.removeVideoOverlay = function() {
 // kmz plugin addition
 window.kmzLayers = {};
 
+// for loading overlays
 window.loadKmzOverlay = function(layerId, kmzUrl) {
     try {
         if (!window.leafletMap) return;
@@ -181,7 +182,7 @@ window.removeAllKmzOverlays = function() {
     }
 };
 
-// lava legend (from the legend js script)
+// lava legend (legend is built/setup in the legend.js file)
 window.showLavaLegend = function(legendHTML) {
     try {
         var existing = document.getElementById('lava-zone-legend');
