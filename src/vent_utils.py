@@ -10,7 +10,7 @@ from vent_locations import *
 # directory for json files and the path to it
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-JSON_DIR = os.path.join(PROJECT_ROOT, "mlv_json")
+JSON_DIR = os.path.join(PROJECT_ROOT, "vent_json")
 
 """
 VENT SELECTION FUNCTIONS
@@ -92,7 +92,7 @@ def find_closest_vent(user_coord):
 ANIMATION PLAYING FUNCTIONS:
 load_vent_animations: get all animations for the vent's json file
 get_animation_key: build specific key based on vent number and lava configuration
-get_animation_data:
+get_animation_data: 
 """
 # maps configurations to their number based on the toggles
 # viscosity, vent size, effusion rate
@@ -123,8 +123,18 @@ def load_vent_animations(ventFile):
     return {}
 
 """
-load_vent_animations
+build animation key for a vent + config selection
+viscosity, ventSize and effusion are passed here, but defined in lava_gui
+get_animation_key builds an identifier for a unique vent and configuration.
 """
+def get_animation_key(ventFile, viscosity, ventSize, effusion):
+    base_name = os.path.splitext(ventFile)[0] # removes the file extension
+
+    combo = (viscosity, ventSize, effusion) # store the value from the config map
+    anim_num = ANIMATION_CONFIG_MAP.get(combo, DEFAULT_ANIMATION_CONFIG)
+
+    return f"{base_name}_{anim_num}"
+
 def get_animation_data(ventFile, viscosity, ventSize, effusion):
     animations = load_vent_animations(ventFile)
     if not animations:
@@ -138,17 +148,6 @@ def get_animation_data(ventFile, viscosity, ventSize, effusion):
 
     return key, animations[key]
 
-"""
-build animation key for a vent + config selection
-viscosity, ventSize and effusion are passed here, but defined in lava_gui
-get_animation_key builds an identifier for a unique vent and configuration.
-"""
-def get_animation_key(ventFile, viscosity, ventSize, effusion):
-    base_name = os.path.splitext(ventFile)[0] # removes the file extension
 
-    combo = (viscosity, ventSize, effusion)
-    anim_num = ANIMATION_CONFIG_MAP.get(combo, DEFAULT_ANIMATION_CONFIG)
-
-    return f"{base_name}_{anim_num}"
 
 

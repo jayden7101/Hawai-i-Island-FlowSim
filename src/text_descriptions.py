@@ -1,3 +1,5 @@
+# this stores all longer text descriptions
+
 DISCLAIMER_TEXT = """
     <b>All lava simulations are: </b><br><br>
     <span style='color:#E9B38D;'>•</span> Created in VolcFlow C, which has been recompiled to be 64 bit. <br><br>

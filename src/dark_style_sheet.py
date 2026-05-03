@@ -401,6 +401,34 @@ STYLE_THEME_CIRCLE_BTN = f"""
     }}
 """
 
+#=================
+# Zoom Button
+#=================
+STYLE_ZOOM_BTN = f"""
+    QPushButton {{
+        background-color: {COLOR_BASALT_STEEL};
+        color: {COLOR_ASH_WHITE};
+        border: 1px solid {COLOR_VOLCANIC_STONE};
+        border-radius: 15px;
+        font-family: Verdana, serif;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0px;
+    }}
+    QPushButton:hover {{
+        background-color: {COLOR_GRAPHITE_RISE};
+        border: 1px solid {COLOR_SMOKE_MIST};
+    }}
+    QPushButton:pressed {{
+        background-color: {COLOR_GRAPHITE_RISE};
+        border: 1px solid {COLOR_LAVA_RED};
+    }}
+    QPushButton:checked {{
+        background-color: {COLOR_GRAPHITE_RISE};
+        border: 1px solid {COLOR_LAVA_RED};
+    }}
+"""
+
 #========================
 # Scrubber Buttons
 #========================

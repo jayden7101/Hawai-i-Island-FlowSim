@@ -41,7 +41,8 @@ LAYERS_DIR_PATH = os.path.join(PROJECT_ROOT, "overlayers")
 
 # other constants
 WINDOW_TITLE = "Lava Flow Simulation"
-LAVA_ZONE_FILENAME = "HVO_LavaFlowHazardZones.kmz"
+# necessary for displaying the hazard zone legend only when that overlay is up
+LAVA_ZONE_FILENAME = "HVO_LavaFlowHazardZones.kmz" 
 
 """
 MAP BRIDGE AND PYTHON LINK
@@ -78,7 +79,9 @@ class MapBridge(QObject):
             
             # Reset state when new click
             self.parentWindow.isDataPlaying = False
-            self.parentWindow.updateButtonState(isPlaying=False)
+            self.parentWindow.updateButtonState(isPlaying = False)
+            # added to tell the difference between a pause/resume and new click entirely
+            self.parentWindow.isNewClick = True 
 
         except Exception as error:
             print(f"Bridge error: {error}") # In case
@@ -111,9 +114,11 @@ class LavaGui(QMainWindow):
         self.currentCoords = None
         self.tempFiles = list()
         self.isDataPlaying = False
-        self.currentAnimKey = None # for tracking current animation 
+        self.currentAnimKey = None # for tracking current animation
+        self.isNewClick = False # for tracking if there's a new click
+        self.autoZoom = False # tracking whether or not to use auto zoom
 
-        # track active layers
+        # track active overlay layers
         self.activeOverlays = {}
 
         # Splitter 
@@ -168,6 +173,13 @@ class LavaGui(QMainWindow):
         self.btnTheme.clicked.connect(self.toggleTheme)
         self.btnTheme.setToolTip("Toggle light and dark mode")
 
+        # auto zoom toggle button
+        self.btnZoom = QPushButton("⌕")
+        self.btnZoom.setFixedSize(30, 30)
+        self.btnZoom.setCheckable(True)
+        self.btnZoom.clicked.connect(self.toggleAutoZoom)
+        self.btnZoom.setToolTip("Toggle zoom to bounds on/off")
+        
         # parameter button
         self.btnParameter = QPushButton("▶  Parameters") 
         self.btnParameter.setCheckable(True)
@@ -185,6 +197,7 @@ class LavaGui(QMainWindow):
         hBox.addWidget(self.btnParameter)
         hBox.addWidget(self.btnSources)
         hBox.addStretch()
+        hBox.addWidget(self.btnZoom)
         hBox.addWidget(self.btnTheme)
         
         layout.addLayout(hBox)
@@ -192,7 +205,7 @@ class LavaGui(QMainWindow):
 
         # configuration parameter radio buttons
         # visocisty
-        self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low \n(Pahoehoe)", "High \n('A'a)"])
+        self.groupVisc = self.createRadioGroup(layout, "Viscosity", ["Low", "High"])
 
         # vent size
         self.groupVent = self.createRadioGroup(layout, "Vent Size", ["Small", "Large"])
@@ -222,18 +235,18 @@ class LavaGui(QMainWindow):
         self.overlayLabel = QLabel("Map Overlays")
         layout.addWidget(self.overlayLabel)
 
-
         # drop down box for the overlay selection - ol/Ol short for overlay
+        # anything with ol is going to be related to the overlay functionality
         ol_row = QHBoxLayout()
         ol_row.setSpacing(4)
 
         #dropdown toggle to open + close dropdown
         self.btnOlDropdown = QPushButton("Overlay Options ▶")
 
-        self.btnOlDropdown.clicked.connect(self.toggleDropdown)
+        self.btnOlDropdown.clicked.connect(self.toggleOlDropdown)
         ol_row.addWidget(self.btnOlDropdown)
 
-        # clear all button
+        # clear all overlays button
         self.btnClearOverlays = QPushButton( "Clear Overlays")
         self.btnClearOverlays.clicked.connect(self.clearAllOverlays)
         ol_row.addWidget(self.btnClearOverlays)
@@ -247,6 +260,8 @@ class LavaGui(QMainWindow):
         self.overlayList.setVisible(False)
         self.overlayList.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
+        # overlay layers - this will populate a list of overlays based off of the
+        # the items in OVERLAY_LAYERS in overlay_config.py
         self.overlayItems = {}
         for label, ol_filename in OVERLAY_LAYERS:
             ol_item = QListWidgetItem(self.formatOverlayText(label, False))
@@ -324,19 +339,19 @@ class LavaGui(QMainWindow):
         parentLayout.addWidget(outerContainer)
         return group
 
-    """
-    SETUP THE MAP AREA
-    """
+    # setup the map area
     def setupMapArea(self, parentWidget):
         # RHS Map area builder (func)
         layout = QVBoxLayout()
         parentWidget.setLayout(layout)
 
+        # setting up the orange bar over the map
         self.infoBubb = QLabel("Status: Idle | Adjust Settings & Click Map!") 
         self.infoBubb.setAlignment(Qt.AlignCenter)
-        self.infoBubb.setFixedHeight(36) # ensure top bubble doesnt get too big
+        self.infoBubb.setFixedHeight(40) # ensure top bubble doesnt get too big
         self.infoBubb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
+        # add this widget to the gui
         layout.addWidget(self.infoBubb)
         
         self.viewTopo = QWebEngineView()
@@ -344,7 +359,7 @@ class LavaGui(QMainWindow):
         layout.addWidget(self.viewTopo)
         self.scrubber.setPage(self.viewTopo.page())
 
-
+    # create the map
     def initializeMap(self, webView):
         # QWebEngine without the HTML string injection --> I just found it hard to work with :( 
         self.channel = QWebChannel()
@@ -402,10 +417,13 @@ class LavaGui(QMainWindow):
         except Exception as error:
             print(f"Map Load Error: {error}")
 
-    """ ANIMATION FUNCTIONS """
+    """
+    ANIMATION FUNCTIONS
+    these are all functions pertaining to the playing of the animations
+    """
     def handleRunClick(self):
         # Run/Pause (function)
-        if not self.closestVent:
+        if not self.closestVent: # if someone has hit run without choosing a location
             self.infoBubb.setText("Please click a location on the map first. ")
             return
 
@@ -422,13 +440,14 @@ class LavaGui(QMainWindow):
             self.runSimulation()
             
     def handleResetClick(self):
-        # Stop/Reset Sim
+        # Stop/Reset Sim - start fresh
         try:
             self.isDataPlaying = False
             self.closestVent = None
             self.closestVentFile = None 
             self.currentCoords = None
             self.currentAnimKey = None # so videos replay when clicking near same vent w same config
+            self.isNewClick = False
             
             self.updateButtonState(isPlaying = False)
             self.infoBubb.setText("Status: Reset | Click map to start new simulation")
@@ -442,25 +461,20 @@ class LavaGui(QMainWindow):
         except Exception as error:
             print(f"Reset error: {error}")
 
+    # for updating the text on the button
     def updateButtonState(self, isPlaying):
         if isPlaying:
             self.btnStart.setText("PAUSE SIMULATION")
         else:
             self.btnStart.setText("RUN / RESUME")
 
-
-    """
-    get_animation_data: function from vent_utils.py
-    """
     def runSimulation(self):
         # Video playback strt
         try:
 
-            """
-            Parameters to make backend setup easier
-            removed melvin's original ventSize and effusion to account for
-            only two choices for vent size and effusion rate
-            """
+            # these are the parameters available for lava flow configurations
+            # 3 parameters: viscosity, vent size and """"effusion rate""" with
+            # options for high/large and low/small
             viscosity = "low" if self.groupVisc.checkedId() == 0 else "high"
             ventSize = "small" if self.groupVent.checkedId() == 0 else "large"
             effusion = "low" if self.groupEff.checkedId() == 0 else "high"
@@ -476,10 +490,10 @@ class LavaGui(QMainWindow):
             changedAnimConfig = (animKey != self.currentAnimKey)
 
             # if no changes, resume existing video
-            # add in the self.isDataPlaying check so that if user clicks on a new location
-            # and that new location maps to the same vent currently playing, an animation will
-            # continue to play
-            if not changedAnimConfig and self.currentAnimKey is not None and self.isDataPlaying:
+            # self.isDataPlaying made it so that resuming a video would restart it from the beginning
+            # this has been changed to check for isNewClick to differentiate between a genuine resume
+            # and a new click
+            if not changedAnimConfig and self.currentAnimKey is not None and not self.isNewClick:
                 self.isDataPlaying = True
                 self.updateButtonState(isPlaying = True)
                 jsCommand = "window.playVideoOverlay();"
@@ -538,7 +552,8 @@ class LavaGui(QMainWindow):
         # Pause video funct
         try:
             self.isDataPlaying = False
-            self.updateButtonState(isPlaying= False)
+            self.updateButtonState(isPlaying = False)
+            self.isNewClick = False
             
             jsCommand = "window.pauseVideoOverlay();"
             self.viewTopo.page().runJavaScript(jsCommand)
@@ -551,12 +566,15 @@ class LavaGui(QMainWindow):
             print(f"Pause error: {error}")
 
     """
-    Theme Functions      
+    THEME FUNCTIONS
+    for going between light mode and dark mode
     """
     def applyTheme(self):
         self.currentTheme = get_theme(self.currentThemeName)
         apply_theme(self, self.currentTheme)
-        self.refreshOverlayIcons()
+        # if a theme is added that meaningfully changes the way overlay list and its icons
+        # look then uncomment the refresh overlay icons function call/definition
+        # self.refreshOverlayIcons() 
     
     def toggleTheme(self):
         if self.currentThemeName == "light":
@@ -570,6 +588,7 @@ class LavaGui(QMainWindow):
 
     """
     BUTTON FUNCTIONS
+    these functions belong to the various buttons on the left hand side of the gui
     """
     # disclaimer button toggle; close parameter if disclaimer open
     def toggleDisclaimerPanel(self, checked):
@@ -595,9 +614,12 @@ class LavaGui(QMainWindow):
         sep.setFrameShadow(QFrame.Sunken) 
         layout.addWidget(sep)
 
+    # text to show in the about box
     def showInfo(self):
         QMessageBox.information(self, "About", "1) Click Map\n2) Run/Pause\n3) Reset to start over")
 
+    # text to show in the documentation/sources box. to add further sources, please add to
+    # the SOURCE_TEXT in text_descriptions.py
     def showSource(self):
         QMessageBox.information(
             self,
@@ -607,15 +629,27 @@ class LavaGui(QMainWindow):
         )
 
     """
+    AUTO ZOOM BUTTON FUNCTION
+    """
+    def toggleAutoZoom(self):
+        self.autoZoom = not self.autoZoom
+        # auto zoom functionality in map_bridge.js
+        self.viewTopo.page().runJavaScript(
+            f"window.autoZoomEnabled = {str(self.autoZoom).lower()}"
+        )
+        
+    """
     OVERLAY FUNCTIONS
     ol prefix indicates that this is something tied to the overlay
     functionality (files, etc)
     """
-    def toggleDropdown(self):
+    # toggle the drop down visibility/text 
+    def toggleOlDropdown(self):
         isVisible = self.overlayList.isVisible()
         self.overlayList.setVisible(not isVisible)
         self.btnOlDropdown.setText("▼  Overlay Options" if not isVisible else "▶  Overlay Options")
 
+    # handling when clicking on an overlay in the dropdown list
     def handleOlClick(self, ol_item):
         ol_filename = ol_item.data(Qt.UserRole)
         if ol_filename in self.activeOverlays:
@@ -623,18 +657,25 @@ class LavaGui(QMainWindow):
         else:
             self.addOverlay(ol_filename, ol_item)
 
+    # this is commented out, but will leave it in in the event that a theme is added/changed
+    # that changes the way icons/overlay list significantly from the what is loaded in
+    # formatOverlayText
+    """
     def refreshOverlayIcons(self):
         for i in range(self.overlayList.count()):
             item = self.overlayList.item(i)
             ol_filename = item.data(Qt.UserRole)
             label = item.data(Qt.UserRole + 1)
             isActive = ol_filename in self.activeOverlays
-            item.setText(self.formatOverlayText(label, isActive))
+            item.setText(self.formatOveralayText(label, isActive))
+    """
 
+    # for the overlay formatting. returns the little circle and the name of the overlay
     def formatOverlayText(self, label, isActive):
         icon = self.currentTheme.OVERLAY_ON if isActive else self.currentTheme.OVERLAY_OFF
         return f" {icon} {label}"
 
+    # turn on an overlay - based off a click in the overlay dropdown
     def addOverlay(self, ol_filename, ol_item):
         ol_layerPath = os.path.join(LAYERS_DIR_PATH, ol_filename)
         if not os.path.exists(ol_layerPath):
@@ -652,6 +693,7 @@ class LavaGui(QMainWindow):
         if ol_filename == LAVA_ZONE_FILENAME:
             self.showLegend()
 
+    # remove an individual overlay - based off a click in the overlay drop down
     def removeOverlay(self, ol_filename, ol_item):
         jsCommand = f"window.removeKmzOverlay('{ol_filename}');"
         self.viewTopo.page().runJavaScript(jsCommand)
@@ -673,11 +715,15 @@ class LavaGui(QMainWindow):
     def hideLegend(self):
         self.viewTopo.page().runJavaScript("window.hideLavaLegend();")
 
+    # remove all visible overlays
     def clearAllOverlays(self):
         for ol_filename, ol_item in list(self.activeOverlays.items()):
             self.removeOverlay(ol_filename, ol_item)
         print("All overlays have been cleared.")
-    
+
+    """
+    OTHER FUNCTIONS
+    """    
     # temp file cleaning
     def closeEvent(self, event):
         # Cleanup any tmp files 

@@ -13,6 +13,7 @@ def apply_theme(window, theme):
     window.btnParameter.setStyleSheet(theme.STYLE_DISC_PARAM_BTN)
     window.btnSources.setStyleSheet(theme.STYLE_SOURCE_BTN)
     window.btnTheme.setStyleSheet(theme.STYLE_THEME_CIRCLE_BTN)
+    window.btnZoom.setStyleSheet(theme.STYLE_ZOOM_BTN)
 
     # Info / text boxes
     window.disclaimerBox.setStyleSheet(theme.STYLE_DISC_PARAM_BOXES)

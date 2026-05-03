@@ -376,6 +376,32 @@ STYLE_THEME_CIRCLE_BTN = f"""
     }}
 """
 
+# zoom button
+STYLE_ZOOM_BTN = f"""
+        QPushButton {{
+        background-color: {COLOR_ALMOND};
+        color: {COLOR_DK_GRAY};
+        border: 1px solid {COLOR_DUSTY_BEIGE};
+        border-radius: 15px;
+        font-family: Verdana, serif;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0px;
+    }}
+    QPushButton:hover {{
+        background-color: {COLOR_LT_GRAY_BRWN};
+        border: 1px solid {COLOR_GRAY_BRWN};
+    }}
+    QPushButton:pressed {{
+        background-color: {COLOR_DUSTY_BEIGE};
+        border: 1px solid {COLOR_DRK_ORANGE};
+    }}
+    QPushButton:checked {{
+        background-color: {COLOR_DUSTY_BEIGE};
+        border: 1px solid {COLOR_DRK_ORANGE};
+    }}
+"""
+
 # scrubber buttons
 STYLE_SCRUBBER_SLIDER = f"""
     QSlider::groove:horizontal {{
@@ -430,3 +456,4 @@ STYLE_SCRUBBER_BTN = f"""
         border: 1px solid #ddd;
     }}
 """
+

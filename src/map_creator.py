@@ -90,17 +90,12 @@ def create_big_island_map():
     folium_map.get_root().html.add_child(folium.Element(
         f"<script>{map_helpers_js}</script>"
     ))
-
-    #map_name = folium_map.get_name()
-
     
     with open(LEGEND_PATH, "r", encoding="utf-8") as f:
         legend_js = f.read()
 
     folium_map.get_root().html.add_child(folium.Element(
         f"<script>{legend_js}</script>" ))
-
-
 
     map_name = folium_map.get_name()
 
