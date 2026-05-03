@@ -55,6 +55,27 @@ Follow these steps to expand the simulation library:
 	   
 	4. Validation: The vent_utils.py script will automatically use the Haversine formula to include this new vent 
 	   in distance calculations during the next runtime.
+
+*******************************************
+How to Add New Overlays
+*******************************************
+This project is built so that you can add/remove overlays as you desire. Overlays that
+you want to show up must be KMZ or KML format. 
+
+	To add:
+	1. Drop your KMZ file into the overlayers folder.
+	2. Add your file to the "overlay_config.py" script. 
+	   - In the OVERLAY_LAYERS list:
+		First add a comma after the last entry in the list
+		Follow this format: ("Name to appear in the list", "file_name.kmz")
+	The layers will automatically populate in the overlay drop down list.
+
+	To delete:
+	1. Delete the KMZ file from the overlayers folder. (Or don't - as long as you 
+	do step 2, no option to turn that overlay on will exist.)
+	2. Delete the overlay's entry in the OVERLAY_LAYER's list. This will
+	prevent the overlay option from showing up in the list.
+	
 	
 *******************************************
 System Architecture Overview
@@ -73,6 +94,41 @@ The Map Bridge (JavaScript and QWebChannel):
 To allow communication between the map and Python, the project utilizes a MapBridge class. When a user clicks 
 the map, a JavaScript event captures the coordinates and sends them to the Python sendCoordinates slot. 
 The Python backend then processes these coordinates to identify the nearest simulation vent.
+
+*******************************************
+What's in the Box?
+*******************************************
+FOLDERS:
+animation_videos: All lava flow animations, each stored within a folder that is named after their vent. 
+	MLV60 means Mauna Loa Vent 60. 
+	Vent numbers were arbitrarily chosen. 
+	MLV prefix = Mauna Loa Vent
+	KV prefix = Kilauea Vent
+images: Any images go here (icon, etc)
+js: JS scripts
+vent_json: Vent JSON files go here
+overlayers: Overlay KMZ files go here
+src: Python Scripts
+
+PYTHON:
+dark_style_sheet.py: Style sheet for dark mode
+lava_gui.py: Everything GUI related - buttons, layout, play functionality, parameters
+light_style_sheet.py: Style sheet for light mode
+main_window.py: Hit run here to start up the program
+map_creator.py: For creating map area
+overlay_config.py: Where text descriptions and file links for overlays go
+scrubber.py: Anything pertaining to building the scrubber is here
+text_descriptions.py: This is where all longer text descriptions are stored. 
+theme_manager.py: Logic for managing the themes and their styles
+themes.py: Tracks and gets styling for existing themes
+vent_locations.py: List of all vents, broken into 4 quadrants.
+vent_utils.py: For calculating closest vent and getting data 
+
+JS:
+leaflet-kmz.js: This is the KMZ plugin from Raruto.
+legend.js: For building lava hazard zone legends. 
+map_bridge.js: Functionality for overlays and animation playing
+map_helpers.js: Definition of the auto zoom function. 
 
 *******************************************
 Data Pipeline and Technical Specifications
