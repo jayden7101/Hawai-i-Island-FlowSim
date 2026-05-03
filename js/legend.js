@@ -1,3 +1,6 @@
+
+// this is the legend for the lava hazard zone numbers values
+// it will only show when the lava hazard zone overlay is visible.
 window.showLavaLegend = function() {
     try {
         var existing = document.getElementById('lava-zone-legend');
@@ -74,6 +77,8 @@ window.showLavaLegend = function() {
     }
 };
 
+// this function is to hide the lava zone hazard when the overlay is not
+// current visible
 window.hideLavaLegend = function() {
     try {
         var el = document.getElementById('lava-zone-legend');
@@ -83,3 +88,5 @@ window.hideLavaLegend = function() {
         console.error("Legend remove error (JS Side): , error");
     }
 };
+
+window.showLavaDepthLegend = function(){};

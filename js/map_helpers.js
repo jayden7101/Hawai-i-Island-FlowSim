@@ -1,3 +1,7 @@
+// function definition for zooming to the animation bounds
+// animation bounds are the coordinates of the 4 corners of the animation and
+// is based off of the cropped selection of the hawaii island map that was used
+// to generate the lava flows
 window.zoomToAnimationBounds = function(swLat, swLon, neLat, neLon, ventLat, ventLon) {
     const map = window.leafletMap || window.appMap;
     if (!map) {
